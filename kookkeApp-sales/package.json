@@ -1,0 +1,37 @@
+{
+  "name": "kookke-sales-route-guidance",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@react-native-async-storage/async-storage": "2.1.0",
+    "expo": "~52.0.0",
+    "expo-camera": "~16.0.18",
+    "expo-file-system": "~18.0.12",
+    "expo-image-manipulator": "~13.0.6",
+    "expo-linking": "~7.0.3",
+    "expo-location": "~18.0.4",
+    "expo-sqlite": "^16.0.10",
+    "expo-task-manager": "~12.0.3",
+    "lottie-react-native": "7.0.0",
+    "react": "18.3.1",
+    "react-hook-form": "^7.71.1",
+    "react-native": "0.76.5",
+    "react-native-map-clustering": "^4.0.0",
+    "react-native-maps": "1.18.0",
+    "uuid": "^13.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~18.3.12",
+    "typescript": "^5.3.3"
+  },
+  "private": true
+}

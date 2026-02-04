@@ -1,0 +1,15 @@
+1.ocr 
+-let the ocr include an option for user to pic from gallery and scan allows(but also user should be able to pic mutiple)
+-erro message(have been deprecated. Use `ImagePicker.MediaType` or an array of `ImagePicker.MediaType` instead.
+ WARN  [expo-image-picker] `ImagePicker.MediaTypeOptions` have been deprecated. Use `ImagePicker.MediaType` or an array of `ImagePicker.MediaType` instead.
+ WARN  [expo-image-picker] `ImagePicker.MediaTypeOptions` have been deprecated. Use `ImagePicker.MediaType` or an array of `ImagePicker.MediaType` instead.
+ WARN  [expo-image-picker] `ImagePicker.MediaTypeOptions` have been deprecated. Use `ImagePicker.MediaType` or an array of `ImagePicker.MediaType` instead.
+ ERROR  The action 'NAVIGATE' with payload {"name":"Home","params":{"ocrResult":{"itemId":"item_123","detectedLabel":"Perfect Slices 100g","matchedItem":"UHT Perfect Slices 100g","quantity":7,"confidence":0.91,"flags":["ARITHMETIC_DETECTED","CROSSED_OUT"]}}} was not handled by any navigator.
+
+Do you have a screen named 'Home'?
+
+If you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.
+
+If you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.
+
+This is a development-only warning and won't be shown in production.)

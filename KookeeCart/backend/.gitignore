@@ -1,0 +1,5 @@
+# Node modules
+/node_modules
+
+# WhatsApp-Web.js LocalAuth folder (always ignore, even when using RemoteAuth)
+/.wwebjs_auth

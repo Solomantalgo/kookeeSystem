@@ -1,0 +1,19 @@
+--- COMPREHENSIVE REPORTS DEBUG ---
+Total reports in DB: 16
+
+0. [2026-01-31 09:40:55] Outlet: Carrefour Arena Mall | ID: 2cd8b6e2-451b-413a-b8a9-bd120ed873b4 | Merch: admin
+1. [2026-01-31 07:30:46] Outlet: Carrefour Oasis Mall | ID: 4a3333ea-edb0-48e2-b67b-6c1f525d1ba6 | Merch: admin
+2. [2026-01-31 06:30:26] Outlet: Solo | ID: 9edb17f7-5acf-4773-8d31-0d9c54616ecd | Merch: admin
+3. [2026-01-31 06:28:10] Outlet: Solo | ID: 8555d0ba-13ac-41dc-beb9-a3d5aba3c99f | Merch: admin
+4. [2026-01-31 06:27:48] Outlet: Solo | ID: d4a979dc-cfe6-4f58-80eb-474883ff8958 | Merch: admin
+5. [2026-01-30 11:56:26] Outlet: Carrefour Oasis Mall | ID: 7b2ee790-ee4c-4bc4-81e7-00e10a497aa7 | Merch: admin
+6. [2026-01-30 11:32:01] Outlet: Carrefour Oasis Mall | ID: 507376ee-0a83-4f87-b25a-2ed4ba630013 | Merch: admin
+7. [2026-01-29 12:57:11] Outlet: Carrefour Oasis Mall | ID: c77ebfa4-743f-4958-89d5-cd5077c8a6cb | Merch: admin
+8. [2026-01-29 12:47:06] Outlet: Carrefour Oasis Mall | ID: 9b90ffda-064f-46ec-bcf1-ace37747b998 | Merch: admin
+9. [2026-01-29 12:24:15] Outlet: TMT Bukoto | ID: 2738a3c2-5baf-4626-9eb2-61ee7429201f | Merch: admin
+10. [2026-01-29 12:23:40] Outlet: Carrefour Lugogo Mall | ID: a852abd2-ed54-4740-88d8-492a55526851 | Merch: admin
+11. [2026-01-29 12:23:25] Outlet: Carrefour Lugogo Mall | ID: 940df3ff-d607-435e-86ce-9c6c98370995 | Merch: admin
+12. [2026-01-29 11:38:52] Outlet: Carrefour Oasis Mall | ID: d565395e-3039-4b8a-9d76-9a3fdc9e2925 | Merch: admin
+13. [2026-01-29 11:29:39] Outlet: Carrefour Oasis Mall | ID: ef811983-a2eb-45d0-8ee2-d748fa54291b | Merch: admin
+14. [2026-01-29 08:41:34] Outlet: Carrefour Oasis Mall | ID: 4df9d760-2dec-4321-911a-fc6517e35d7b | Merch: admin
+15. [2026-01-29 08:41:27] Outlet: Carrefour Oasis Mall | ID: 91711b09-f46a-4cca-b95a-3d33f20b2e60 | Merch: admin

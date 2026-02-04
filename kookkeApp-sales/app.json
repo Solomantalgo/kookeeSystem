@@ -1,0 +1,55 @@
+{
+    "expo": {
+        "name": "Kookke Sales Route",
+        "slug": "kookke-sales-route",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "automatic",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.kookke.salesroute",
+            "infoPlist": {
+                "NSLocationWhenInUseUsageDescription": "This app needs your location to guide you to customer outlets.",
+                "NSLocationAlwaysAndWhenInUseUsageDescription": "This app tracks your location in the background to record your route breadcrumbs.",
+                "UIBackgroundModes": [
+                    "location"
+                ]
+            }
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#ffffff"
+            },
+            "package": "com.kookke.salesroute",
+            "permissions": [
+                "ACCESS_FINE_LOCATION",
+                "ACCESS_COARSE_LOCATION",
+                "ACCESS_BACKGROUND_LOCATION",
+                "FOREGROUND_SERVICE"
+            ],
+            "config": {
+                "googleMaps": {
+                    "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+                }
+            }
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "plugins": [
+            [
+                "expo-location",
+                {
+                    "locationAlwaysAndWhenInUsePermission": "Allow Kookke Sales Route to use your location to guide you to customers."
+                }
+            ]
+        ]
+    }
+}

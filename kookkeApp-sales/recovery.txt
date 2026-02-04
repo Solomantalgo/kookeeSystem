@@ -1,0 +1,475 @@
+Ultimate Recovery Prompt for Copilot - Sales Route Guidance App (Complete Build)
+You are an expert full-stack mobile developer tasked with building a complete Sales Route Guidance App from scratch. This is an AI-to-AI development task - work efficiently, make smart decisions, and deliver a working MVP quickly.
+Project Overview
+Purpose: Guide new salespeople through predefined sales routes with GPS, photos, and experience notes from previous users.
+Key Principle: Simplicity. New salesperson opens app, sees next customer, navigates there, completes visit, moves to next. That's it.
+Technical Stack Decision
+Choose the fastest path to a working offline-first GPS app:
+
+Recommended: React Native + Expo (fastest for GPS/camera/offline)
+Alternative: Flutter (if you prefer)
+Local Storage: SQLite or AsyncStorage with structure
+Maps: React Native Maps or equivalent
+Camera: Expo Camera or react-native-camera
+
+Make the choice and stick with it. Document your choice at the start.
+Core Data Model (Implement First)
+javascript// Users
+{
+  user_id: string (uuid),
+  name: string,
+  employee_id: string, // login credential
+  route_id: string,
+  registered_at: timestamp
+}
+
+// Routes
+{
+  route_id: string (uuid),
+  name: string,
+  created_by: user_id,
+  customer_order: [customer_id, customer_id, ...], // array of IDs
+  created_at: timestamp
+}
+
+// Customers
+{
+  customer_id: string (uuid),
+  name: string,
+  area: string,
+  phone: string (optional),
+  gps_lat: float,
+  gps_lng: float,
+  photo_uri: string, // local file path
+  location_notes: string, // "Near the big tree, yellow building"
+  visit_notes: string, // "Owner prefers morning visits, usually busy"
+  active: boolean (default true)
+}
+
+// Visits (daily tracking)
+{
+  visit_id: string (uuid),
+  user_id: string,
+  customer_id: string,
+  date: date (YYYY-MM-DD),
+  completed: boolean,
+  arrival_time: timestamp (optional),
+  completion_time: timestamp (optional),
+  notes: string (optional),
+  reason_missed: enum ["Closed", "Unavailable", "No stock", null]
+}
+```
+
+## MVP Features to Build (Priority Order)
+
+### 1. Database Setup & Seed Data (DO THIS FIRST)
+- Set up local SQLite database
+- Create all 4 tables
+- **Seed with demo data**:
+  - 1 existing user: "John Doe" (employee_id: "SALES001")
+  - 1 route: "Kampala Central - Route A"
+  - 5 demo customers with fake GPS coordinates (use Kampala coordinates)
+  - Mock outlet photos (use placeholder images or simple colored squares with text)
+  - Each customer has location_notes and visit_notes
+
+**WHY**: This lets you test everything without needing real GPS capture first
+
+### 2. Authentication (Simple)
+```
+Screen: Login
+- Input: Employee ID
+- Button: "Login"
+- Logic: 
+  - Check if user exists
+  - If yes: Load their route → Home
+  - If no: Ask for name → Create user → Copy route from SALES001 → Home
+```
+
+### 3. Home Screen (Main Hub)
+```
+Screen: Today's Route
+- Header: "Welcome, [Name]" + Date
+- Progress indicator: "3 of 5 customers visited"
+- BIG CARD: Next Customer
+  - Customer name
+  - Area
+  - Small map preview
+  - "View Details" button
+- List below: Remaining customers (simple list)
+- Bottom: "+ Add Customer" button
+```
+
+### 4. Customer Details Screen
+```
+Screen: Customer Details
+- Customer name (header)
+- Outlet photo (large, prominent)
+- Info section:
+  - Area: [area]
+  - Phone: [phone] (with call button)
+- Location notes: [location_notes] in a card
+- Visit notes: [visit_notes] in a card ("What to expect")
+- Big button: "Navigate to Customer"
+```
+
+### 5. Navigation Screen
+```
+Screen: In-App Navigation
+- Full screen map
+- User's current location (blue dot)
+- Customer location (red pin with customer name)
+- Polyline showing route
+- Top overlay: 
+  - Distance remaining (calculate from GPS)
+  - "< Back" button
+- Arrival detection:
+  - When within 50m of customer GPS → Show arrival modal
+```
+
+### 6. Arrival Confirmation Modal
+```
+Modal: You've Arrived!
+- Show customer outlet photo
+- "This is [Customer Name]"
+- Big button: "Start Visit"
+- Small button: "Not here yet" (dismiss)
+```
+
+### 7. Visit Screen
+```
+Screen: Complete Visit
+- Customer name (header)
+- Optional checklist (simple checkboxes):
+  - [ ] Took order
+  - [ ] Discussed promotions
+  - [ ] Collected payment
+- Text area: "Visit notes (optional)"
+- Big button: "Complete Visit"
+- If can't visit:
+  - Dropdown: Reason (Closed / Unavailable / No stock)
+  - Button: "Mark as Missed"
+```
+
+### 8. End of Day Summary
+```
+Screen: Day Summary (shows after last customer)
+- "Great work, [Name]!"
+- Customers Visited: X / Y
+- List of missed customers with reasons
+- Button: "Finish Day"
+```
+
+### 9. Add Customer Flow
+```
+Screen: Add New Customer
+- Input: Customer name (required)
+- Input: Area (required)
+- Input: Phone (optional)
+- Button: "Capture Location" → Uses GPS, shows accuracy, confirm when <10m
+- Button: "Take Outlet Photo" → Opens camera
+- Text area: Location notes (required) - "How to find this place"
+- Text area: Visit notes (optional) - "What to expect"
+- Button: "Add Customer" → Appends to route
+```
+
+### 10. Edit Route (Simple Drag-Drop)
+```
+Screen: Edit Route
+- List of customers in current order
+- Each item has drag handle
+- Drag to reorder
+- Swipe left to mark inactive (not delete)
+- Button: "Save Order"
+Critical Implementation Details
+GPS Arrival Detection
+javascript// Pseudo-code for arrival detection
+const checkArrival = (userLat, userLng, customerLat, customerLng) => {
+  const distance = calculateDistance(userLat, userLng, customerLat, customerLng);
+  if (distance <= 50) { // 50 meters
+    showArrivalModal();
+  }
+};
+
+// Use Haversine formula for distance calculation
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371e3; // Earth radius in meters
+  const φ1 = lat1 * Math.PI/180;
+  const φ2 = lat2 * Math.PI/180;
+  const Δφ = (lat2-lat1) * Math.PI/180;
+  const Δλ = (lon2-lon1) * Math.PI/180;
+
+  const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+          Math.cos(φ1) * Math.cos(φ2) *
+          Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  return R * c; // Distance in meters
+};
+Route Copying Logic
+javascript// When new user registers
+const copyRouteToNewUser = async (newUserId, templateUserId = "SALES001") => {
+  // 1. Get template user's route
+  const templateRoute = await getRouteByUserId(templateUserId);
+  
+  // 2. Create new route for new user
+  const newRoute = {
+    route_id: generateUUID(),
+    name: templateRoute.name,
+    created_by: newUserId,
+    customer_order: [...templateRoute.customer_order], // Copy array
+    created_at: new Date()
+  };
+  
+  // 3. Save new route
+  await saveRoute(newRoute);
+  
+  // 4. Update user with new route_id
+  await updateUser(newUserId, { route_id: newRoute.route_id });
+  
+  // Note: Customers are shared, no need to copy them
+};
+Photo Handling
+javascript// Capture and save photo locally
+const captureOutletPhoto = async () => {
+  const photo = await camera.takePictureAsync({
+    quality: 0.7, // Compress to 70%
+    base64: false
+  });
+  
+  // Save to local filesystem
+  const filename = `customer_${customerId}_${Date.now()}.jpg`;
+  const localUri = `${FileSystem.documentDirectory}${filename}`;
+  await FileSystem.moveAsync({
+    from: photo.uri,
+    to: localUri
+  });
+  
+  return localUri; // Store this in database
+};
+Progress Tracking
+javascript// Calculate daily progress
+const getDailyProgress = async (userId, date) => {
+  const route = await getRouteByUserId(userId);
+  const totalCustomers = route.customer_order.length;
+  
+  const visits = await getVisitsByUserAndDate(userId, date);
+  const completedVisits = visits.filter(v => v.completed).length;
+  
+  return {
+    total: totalCustomers,
+    completed: completedVisits,
+    remaining: totalCustomers - completedVisits,
+    percentage: (completedVisits / totalCustomers) * 100
+  };
+};
+```
+
+## UI/UX Guidelines
+
+### Design Principles
+- **Large touch targets** (minimum 48x48 dp)
+- **High contrast** for outdoor visibility
+- **Minimal text** - icons and images preferred
+- **One action per screen** - no confusion
+- **Visual feedback** - loading states, success animations
+
+### Color Scheme (Suggested)
+```
+Primary: #2196F3 (Blue - trust, navigation)
+Success: #4CAF50 (Green - completion)
+Warning: #FF9800 (Orange - attention)
+Error: #F44336 (Red - problems)
+Background: #FFFFFF
+Text Primary: #212121
+Text Secondary: #757575
+Key Screens Layout Priority
+
+Next Customer Card - Biggest, most prominent
+Navigation Button - Always visible, clear action
+Customer Photo - Large, verifiable
+Progress Indicator - Motivating, clear
+
+Testing Strategy (Build This In)
+Test with Seed Data
+javascript// Create test data generator
+const seedDatabase = async () => {
+  // User 1: John Doe (existing salesperson)
+  const john = {
+    user_id: "user_001",
+    name: "John Doe",
+    employee_id: "SALES001",
+    route_id: "route_001",
+    registered_at: new Date()
+  };
+  
+  // Route
+  const route = {
+    route_id: "route_001",
+    name: "Kampala Central - Route A",
+    created_by: "user_001",
+    customer_order: ["cust_001", "cust_002", "cust_003", "cust_004", "cust_005"],
+    created_at: new Date()
+  };
+  
+  // 5 Customers (use real Kampala coordinates)
+  const customers = [
+    {
+      customer_id: "cust_001",
+      name: "Sunshine Supermarket",
+      area: "Kampala Road",
+      phone: "+256700123456",
+      gps_lat: 0.3476,
+      gps_lng: 32.5825,
+      photo_uri: "placeholder_001.jpg",
+      location_notes: "Near traffic lights, yellow building",
+      visit_notes: "Manager Mary prefers morning visits. Usually orders 50+ cases.",
+      active: true
+    },
+    // ... 4 more customers with different coordinates
+  ];
+  
+  // Insert all into database
+};
+Manual Test Checklist
+
+ New user can register and see copied route
+ Home screen shows next customer
+ Can navigate to customer details
+ Navigation shows map with route
+ Arrival modal triggers within 50m (test with mock GPS)
+ Can complete visit and move to next
+ Can mark visit as missed with reason
+ End of day summary shows correct stats
+ Can add new customer with GPS and photo
+ Can reorder route
+ All works offline (test with airplane mode)
+
+Build Sequence (Follow This Order)
+Phase 1: Foundation (30 minutes)
+
+Set up project with chosen framework
+Install dependencies (maps, camera, storage)
+Create database schema
+Seed with demo data
+Build navigation structure (screen routing)
+
+Phase 2: Core Flow (1 hour)
+
+Build login screen (with registration)
+Build home screen (with seeded data)
+Build customer details screen
+Implement route copying logic
+Test: New user → sees route → sees customer details
+
+Phase 3: Navigation (45 minutes)
+
+Build navigation screen with map
+Implement GPS tracking
+Implement arrival detection
+Build arrival modal
+Test: Navigate → arrive → modal appears
+
+Phase 4: Visit Management (45 minutes)
+
+Build visit screen
+Implement visit completion logic
+Implement auto-advance to next customer
+Build missed visit flow
+Test: Complete visit → next customer loads
+
+Phase 5: Day Management (30 minutes)
+
+Build end of day summary
+Implement progress calculations
+Test: Complete all visits → see summary
+
+Phase 6: Customer Management (45 minutes)
+
+Build add customer screen
+Implement GPS capture
+Implement photo capture
+Test: Add customer → appears in route
+
+Phase 7: Route Management (30 minutes)
+
+Build edit route screen
+Implement drag-drop reordering
+Test: Reorder → persists correctly
+
+Phase 8: Polish (30 minutes)
+
+Add loading states
+Add error handling
+Add success animations
+Test offline functionality
+Final end-to-end test
+
+Critical Success Factors
+Must Work Offline
+
+All customer data cached locally
+Photos stored locally
+GPS works without internet
+All CRUD operations work offline
+
+Must Be Fast
+
+Screen transitions < 300ms
+Map loads < 1 second
+Photo capture immediate
+No lag in UI interactions
+
+Must Be Obvious
+
+New user needs zero training
+Next action always clear
+No dead ends or confusion
+Visual confirmation at every step
+
+Deliverables
+Provide:
+
+Complete source code (organized, commented)
+Database initialization script with seed data
+README with:
+
+Tech stack used
+How to run the app
+How to test with seed data
+Known limitations
+
+
+Demo instructions for testing each feature
+
+AI Development Advantages (Use These)
+You're an AI building for AI-assisted humans. Leverage:
+
+Generate complete files - don't leave TODOs
+Create realistic seed data - make it feel real
+Write comprehensive tests - cover edge cases
+Document as you build - inline comments
+Handle errors gracefully - assume Murphy's Law
+Use best practices - you know them all
+
+Time Estimate
+Total: 4-5 hours of focused AI development
+
+Foundation: 30min
+Core Flow: 1hr
+Navigation: 45min
+Visit Management: 45min
+Day Management: 30min
+Customer Management: 45min
+Route Management: 30min
+Polish: 30min
+
+Start Now
+Begin with:
+
+Choose your tech stack (state it clearly)
+Set up the project structure
+Create the database schema
+Seed demo data
+Build the login → home → details flow
+
+Build fast, build working, build complete. Let's ship this app.Claude is AI and can make mistakes. Please double-check responses.
