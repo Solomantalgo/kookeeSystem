@@ -1,19 +1,19 @@
-// Modern African Design - Warm Earth Tones
-export const PRIMARY_COLOR = '#D4704A'; // Terracotta (Warm, Trustworthy, African-inspired)
-export const ACCENT_COLOR = '#F2A65A';  // Amber (Active, Vibrant, Warm)
-export const DANGER_COLOR = '#ef4444';  // Modern Red
-export const BACKGROUND_COLOR = '#FFF8E7'; // Warm cream base (African-inspired)
+// Premium Modern African Design - Rich Earth Tones
+export const PRIMARY_COLOR = '#C85A32'; // Deeper Terracotta
+export const ACCENT_COLOR = '#E58A32';  // Rich Gold
+export const DANGER_COLOR = '#E63946';  // Sharp elegant red
+export const BACKGROUND_COLOR = '#FCF8F4'; // Super soft elegant cream
 export const CARD_BACKGROUND = '#ffffff';
-export const TEXT_COLOR = '#1c1917';    // Professional dark brown
-export const LIGHT_TEXT_COLOR = '#57534e'; // Medium brown-gray
+export const TEXT_COLOR = '#2B2118';    // Espresso brown (very premium)
+export const LIGHT_TEXT_COLOR = '#7C6F62'; // Lighter muted espresso
 
 // African-Inspired Palette (Warm Earth Tones)
-export const TERRACOTTA = '#D4704A';    // Warm terracotta for spices
-export const AMBER = '#F2A65A';          // Warm amber for oils
-export const SAGE = '#8B9D77';           // Earthy sage green
-export const WARM_EARTH = '#C89F7B';     // Warm earth brown
-export const DEEP_CLAY = '#8B4513';      // Deep clay brown
-export const MINT = '#A8E6CF';           // Cool mint for ice cream
-export const SKY_BLUE = '#56CCF2';       // Sky blue accent
-export const CREAM = '#FFF8E7';          // Fresh cream for dairy
-export const SOFT_CREAM = '#F5E6D3';     // Soft cream accent
+export const TERRACOTTA = '#C85A32';
+export const AMBER = '#E58A32';
+export const SAGE = '#7A8C66';
+export const WARM_EARTH = '#B58866';
+export const DEEP_CLAY = '#7A3B0F';
+export const MINT = '#9DD9C4';
+export const SKY_BLUE = '#4CBBE6';
+export const CREAM = '#FCF8F4';
+export const SOFT_CREAM = '#F2E8DB';     

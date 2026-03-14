@@ -6,13 +6,12 @@ import { CARD_BACKGROUND, ACCENT_COLOR, DANGER_COLOR, TEXT_COLOR, LIGHT_TEXT_COL
 export default function CartSummary({ totalItems = 0, totalPrice = 0, onOrderClick, onPreviewClick, cartRef }) {
   // Mobile-first fixed bottom styling
   return (
-    <div ref={cartRef} style={{
+    <div ref={cartRef} className="glass-cart" style={{
       position: 'fixed',
       bottom: 0, // Traditional sticky footer
       left: 0,
       right: 0,
       zIndex: 1000,
-      backgroundColor: CARD_BACKGROUND,
       padding: '12px 16px', // Reduced padding
       boxShadow: '0 -10px 30px rgba(0,0,0,0.1)', // Subtle upward shadow
       display: 'flex',

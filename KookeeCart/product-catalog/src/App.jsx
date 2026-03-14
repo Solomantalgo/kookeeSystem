@@ -87,7 +87,7 @@ function App() {
                 module.preloadCriticalImages(products, 20).catch(() => {
                     // Silently fail - images will load normally
                 });
-                
+
                 // Also preload promotional product images immediately
                 const promoProducts = products.filter(p => p.promotion === true);
                 if (promoProducts.length > 0) {
@@ -150,8 +150,8 @@ function App() {
 
             const validProducts = jsonData.map((row, index) => {
                 const productId = row.id || row.ID || row.Id || (index + 1);
-                const rawPrice = parseFloat(String(row.price || row.Price || row.PRICE || '0').replace(/[^0-9.]/g, '')) || 0;
-                const rawCutPrice = parseFloat(String(row.cutprice || row.Cutprice || row.CUTPRICE || row.cutPrice || '0').replace(/[^0-9.]/g, '')) || 0;
+                const rawPrice = Math.round(parseFloat(String(row.price || row.Price || row.PRICE || '0').replace(/[^0-9.]/g, '')) || 0);
+                const rawCutPrice = Math.round(parseFloat(String(row.cutprice || row.Cutprice || row.CUTPRICE || row.cutPrice || '0').replace(/[^0-9.]/g, '')) || 0);
 
                 // Logic as per User: cutPrice column IS the cut price (Now). price column is Real Price (Was).
                 let price = rawPrice;
@@ -518,17 +518,17 @@ function App() {
             </button>
 
             {/* Fixed Header Section - Shrinks on scroll */}
-            <div 
+            <div
                 ref={headerRef}
+                className="glass"
                 style={{
                     position: 'fixed',
                     top: 0,
                     left: 0,
                     right: 0,
                     zIndex: 1000,
-                    backgroundColor: BACKGROUND_COLOR,
                     transition: 'all 0.3s ease',
-                    boxShadow: isScrolled ? '0 3px 8px rgba(0,0,0,0.1)' : 'none',
+                    boxShadow: isScrolled ? '0 3px 8px rgba(0,0,0,0.05)' : 'none',
                     width: '100%'
                 }}
             >
@@ -543,8 +543,9 @@ function App() {
             </div>
 
             {/* Fixed Menu Tabs - Below header */}
-            <div 
+            <div
                 ref={tabsRef}
+                className="glass"
                 style={{
                     position: 'fixed',
                     top: `${headerHeight}px`, // Use measured header height
@@ -552,8 +553,7 @@ function App() {
                     right: 0,
                     zIndex: 999,
                     width: '100%',
-                    transition: 'top 0.3s ease',
-                    backgroundColor: CARD_BACKGROUND
+                    transition: 'top 0.3s ease'
                 }}
             >
                 <MenuTabs
@@ -693,6 +693,30 @@ function App() {
                 orderHistory={orderHistory}
                 onClose={() => setShowOrderHistory(false)}
             />
+
+            {/* Hidden admin utility - Sync Images */}
+            <div style={{ textAlign: 'center', padding: '40px 20px', marginTop: '40px' }}>
+                <button
+                    onClick={handleSyncImages}
+                    disabled={isSyncing}
+                    style={{
+                        background: 'none',
+                        border: 'none',
+                        color: LIGHT_TEXT_COLOR,
+                        fontSize: '12px',
+                        cursor: isSyncing ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        margin: '0 auto',
+                        opacity: 0.6
+                    }}
+                >
+                    <span className={isSyncing ? 'fa-spin' : ''}>🔄</span>
+                    Sync Catalog Images
+                </button>
+            </div>
         </div>
     );
 }

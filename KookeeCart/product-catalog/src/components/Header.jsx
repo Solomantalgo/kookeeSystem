@@ -53,32 +53,7 @@ export default function Header({ isScrolled = false, filteredProductsCount = 0, 
         {!isScrolled && <span>Home</span>}
       </a>
 
-      {/* Sync Images Button - Right Corner (Icon Only) */}
-      <button
-        onClick={(e) => { e.stopPropagation(); onSync(); }}
-        disabled={isSyncing}
-        style={{
-          position: 'absolute',
-          top: '12px',
-          right: '16px',
-          background: isSyncing ? '#e5e5e5' : 'rgba(212, 112, 74, 0.1)',
-          border: `1px solid ${PRIMARY_COLOR}`,
-          color: PRIMARY_COLOR,
-          cursor: isSyncing ? 'not-allowed' : 'pointer',
-          padding: '8px',
-          borderRadius: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '36px',
-          minWidth: '36px',
-          zIndex: 10,
-          transition: 'all 0.2s ease'
-        }}
-        title="Sync Images - Clear cache and re-download"
-      >
-        <FaSync className={isSyncing ? 'fa-spin' : ''} size={14} />
-      </button>
+
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
         <h1 style={{
@@ -96,11 +71,7 @@ export default function Header({ isScrolled = false, filteredProductsCount = 0, 
 
       <div style={detailStyles}>
         <p style={{ margin: '4px 0 6px 0', fontSize: '14px', color: TEXT_COLOR, fontWeight: 500 }}>
-          Premium Cosmetic Oils & Quality Spices
-        </p>
-        <p style={{ margin: '0', fontSize: '12px', color: LIGHT_TEXT_COLOR }}>
-          Found <span style={{ fontWeight: 700, color: PRIMARY_COLOR }}>{filteredProductsCount}</span> products
-          {searchQuery && <span> for "{searchQuery}"</span>}
+          Premium Quality Groceries & Dairy
         </p>
       </div>
 
