@@ -18,7 +18,11 @@ const CustomerInfoModal = ({
   // Automatic Location Detection on Open
   useEffect(() => {
     if (show && !customerInfo.location) {
-      handleGetLocation();
+      // Small delay to ensure modal is fully rendered and not considered an overlay
+      const timer = setTimeout(() => {
+        handleGetLocation();
+      }, 1000);
+      return () => clearTimeout(timer);
     }
   }, [show]);
 
@@ -26,7 +30,7 @@ const CustomerInfoModal = ({
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-      setLocationError("Geolocation not supported");
+      setLocationError("Geolocation not supported by your browser");
       return;
     }
 
@@ -44,10 +48,16 @@ const CustomerInfoModal = ({
       },
       (error) => {
         console.error("Location error:", error);
-        setLocationError("Permission denied or location unavailable");
+        let msg = "Could not get location. ";
+        if (error.code === 1) {
+          msg = "Permission denied. Please check your browser settings or close any screen overlays/bubbles and try again.";
+        } else if (error.code === 3) {
+          msg = "Location request timed out. Please try again.";
+        }
+        setLocationError(msg);
         setIsGettingLocation(false);
       },
-      { enableHighAccuracy: true, timeout: 8000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   };
 
