@@ -203,18 +203,19 @@ function App() {
 
         setIsSendingOrder(true);
 
-        let message = `*New Order from Kookee Cart*\n`;
-        message += `-------------------------\n`;
-        message += `*Customer:* ${customerInfo.name}\n`;
-        message += `*Phone:* ${customerInfo.phone}\n`;
-        if (customerInfo.location) message += `*Location:* ${customerInfo.location}\n`;
-        if (customerInfo.address) message += `*Address:* ${customerInfo.address}\n\n`;
+        let message = `*🛒 New Order — Kookee Cart*\n\n`;
+        message += `*Customer Details*\n`;
+        message += `Name: ${customerInfo.name}\n`;
+        message += `Phone: ${customerInfo.phone}\n`;
+        if (customerInfo.location) message += `Location: ${customerInfo.location}\n`;
+        if (customerInfo.address) message += `Address: ${customerInfo.address}\n\n`;
         
-        message += `*Items:*\n`;
+        message += `*Order Summary*\n`;
         orderItems.forEach(item => {
-            message += `- ${item.name} (Qty: ${item.qty})\n`;
+            message += `• ${item.name} — Qty: ${item.qty}\n`;
         });
-        message += `-------------------------`;
+        message += `\n────────────────────\n`;
+        message += `*Thank you for choosing Kookee Cart*`;
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappUrl = `https://wa.me/256759141177?text=${encodedMessage}`;

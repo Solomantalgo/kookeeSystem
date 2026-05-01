@@ -213,6 +213,12 @@ const CustomerInfoModal = ({
               </div>
             ) : (
               <div>
+                {customerInfo.location && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#166534', marginBottom: '12px' }}>
+                    <FaCheckCircle size={16} />
+                    <span style={{ fontWeight: '700', fontSize: '13px' }}>Location Confirmed</span>
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={handleGetLocation}
@@ -220,16 +226,51 @@ const CustomerInfoModal = ({
                   style={{
                     width: '100%', padding: '10px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                    borderRadius: '10px', border: 'none',
-                    background: PRIMARY_COLOR, color: 'white',
+                    borderRadius: '10px', border: customerInfo.location ? '1px solid #e2e8f0' : 'none',
+                    background: customerInfo.location ? 'white' : PRIMARY_COLOR, 
+                    color: customerInfo.location ? TEXT_COLOR : 'white',
                     cursor: 'pointer', fontWeight: '700', fontSize: '13px'
                   }}
                 >
-                  <FaMapMarkerAlt /> Auto-Detect Location
+                  <FaMapMarkerAlt /> {customerInfo.location ? 'Auto-Detect Again' : 'Auto-Detect Location'}
                 </button>
                 {locationError && (
-                  <div style={{ color: DANGER_COLOR, fontSize: '11px', marginTop: '8px', fontWeight: '600' }}>
-                    <FaTimesCircle style={{ marginRight: '4px' }} /> {locationError}
+                  <div style={{ marginTop: '12px', animation: 'fadeIn 0.3s ease' }}>
+                    <div style={{ color: DANGER_COLOR, fontSize: '11px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
+                      <FaTimesCircle /> {locationError}
+                    </div>
+                    
+                    <div style={{ 
+                      background: '#fff', 
+                      border: '1px solid #fee2e2', 
+                      borderRadius: '10px', 
+                      padding: '12px',
+                      fontSize: '12px'
+                    }}>
+                      <p style={{ margin: '0 0 8px 0', fontWeight: '700', color: TEXT_COLOR }}>How to enable location:</p>
+                      <ol style={{ margin: 0, paddingLeft: '18px', color: LIGHT_TEXT_COLOR, lineHeight: '1.5' }}>
+                        <li>Tap the <b>Lock/Settings icon</b> in the browser address bar.</li>
+                        <li>Select <b>Site Settings</b> or <b>Permissions</b>.</li>
+                        <li>Find <b>Location</b> and set it to <b>Allow</b>.</li>
+                        <li>Close any chat bubbles (like Messenger).</li>
+                      </ol>
+                      <button 
+                        onClick={() => window.location.reload()}
+                        style={{
+                          marginTop: '10px',
+                          width: '100%',
+                          padding: '6px',
+                          borderRadius: '6px',
+                          border: '1px solid #e2e8f0',
+                          background: '#f8fafc',
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Refresh to Apply
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
