@@ -92,6 +92,7 @@ body {
 /* Ensure all containers respect viewport width */
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 main,

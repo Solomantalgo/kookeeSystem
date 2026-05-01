@@ -61,6 +61,54 @@ function App() {
     const [orderStatus, setOrderStatus] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
 
+    // --- History API for Back Button ---
+    const openOverlay = (setter, value) => {
+        window.history.pushState({ overlay: true }, '');
+        setter(value);
+    };
+
+    const closeOverlay = (setter, fallbackValue = false) => {
+        if (window.history.state && window.history.state.overlay) {
+            window.history.back();
+        } else {
+            setter(fallbackValue);
+        }
+    };
+
+    const stateRef = useRef({
+        showCustomerForm,
+        showOrderPreview,
+        showOrderHistory,
+        selectedProduct,
+        showSmallCatalog,
+        selectedCategory
+    });
+
+    useEffect(() => {
+        stateRef.current = {
+            showCustomerForm,
+            showOrderPreview,
+            showOrderHistory,
+            selectedProduct,
+            showSmallCatalog,
+            selectedCategory
+        };
+    });
+
+    useEffect(() => {
+        const handlePopState = () => {
+            const s = stateRef.current;
+            if (s.showCustomerForm) setShowCustomerForm(false);
+            else if (s.showOrderPreview) setShowOrderPreview(false);
+            else if (s.showOrderHistory) setShowOrderHistory(false);
+            else if (s.selectedProduct) setSelectedProduct(null);
+            else if (s.showSmallCatalog) setShowSmallCatalog(false);
+            else if (s.selectedCategory) setSelectedCategory(null);
+        };
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, []);
+
     useEffect(() => {
         const EXCEL_URL = 'https://docs.google.com/spreadsheets/d/1Kz-kNPTNl1Loqrwj3B1iuIL5fZRUkFHL/export?format=xlsx';
         loadExcelFromUrl(EXCEL_URL);
@@ -192,7 +240,7 @@ function App() {
     const getProductsByCategory = (category) => getFilteredProducts().filter(p => p.category === category);
 
     const handleWhatsAppOrder = () => {
-        setShowCustomerForm(true);
+        openOverlay(setShowCustomerForm, true);
     };
 
     const proceedWithOrder = async () => {
@@ -266,7 +314,7 @@ function App() {
                     ref={cartRef}
                     totalItems={getTotalItems()}
                     onOrderClick={handleWhatsAppOrder}
-                    onPreviewClick={() => setShowOrderPreview(true)}
+                    onPreviewClick={() => openOverlay(setShowOrderPreview, true)}
                 />
             )}
 
@@ -275,7 +323,7 @@ function App() {
                     isScrolled={isScrolled} 
                     searchQuery={searchQuery} 
                     setSearchQuery={setSearchQuery}
-                    onShowOrderHistory={() => setShowOrderHistory(true)}
+                    onShowOrderHistory={() => openOverlay(setShowOrderHistory, true)}
                     orderHistoryCount={orderHistory.length}
                 />
             </div>
@@ -283,14 +331,14 @@ function App() {
             <div style={{ height: `${headerHeight}px` }} />
 
             <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 15px' }}>
-                {!searchQuery && !selectedCategory && <PromotionalVideoFeed products={products.filter(p => p.promotion).slice(0, 5)} onProductClick={p => setSelectedProduct(p)} />}
+                {!searchQuery && !selectedCategory && <PromotionalVideoFeed products={products.filter(p => p.promotion).slice(0, 5)} onProductClick={p => openOverlay(setSelectedProduct, p)} />}
 
                 {getFilteredProducts().length === 0 ? <EmptyState onClearFilters={() => setSearchQuery('')} /> : (
                     <div style={{ marginTop: '16px' }}>
                         {selectedCategory ? (
                             <>
                                 <button 
-                                    onClick={() => setSelectedCategory(null)} 
+                                    onClick={() => closeOverlay(setSelectedCategory, null)} 
                                     style={{ 
                                         background: '#f1f5f9', 
                                         border: 'none', 
@@ -307,11 +355,11 @@ function App() {
                                 >
                                     <FaArrowLeft size={14} /> Back to Catalog
                                 </button>
-                                <CategorySection key={selectedCategory} categoryName={selectedCategory} products={getProductsByCategory(selectedCategory)} cart={cart} updateQuantity={updateQuantity} onProductClick={p => setSelectedProduct(p)} showAll={true} />
+                                <CategorySection key={selectedCategory} categoryName={selectedCategory} products={getProductsByCategory(selectedCategory)} cart={cart} updateQuantity={updateQuantity} onProductClick={p => openOverlay(setSelectedProduct, p)} showAll={true} />
                             </>
                         ) : (
                             <div id="categories-anchor" style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}>
-                                {categories.map(category => <CategorySection key={category} categoryName={category} products={getProductsByCategory(category)} cart={cart} updateQuantity={updateQuantity} onProductClick={p => setSelectedProduct(p)} onViewAll={c => setSelectedCategory(c)} />)}
+                                {categories.map(category => <CategorySection key={category} categoryName={category} products={getProductsByCategory(category)} cart={cart} updateQuantity={updateQuantity} onProductClick={p => openOverlay(setSelectedProduct, p)} onViewAll={c => openOverlay(setSelectedCategory, c)} />)}
                             </div>
                         )}
                     </div>
@@ -319,16 +367,16 @@ function App() {
             </div>
 
             <Suspense fallback={null}>
-                <OrderPreview show={showOrderPreview} cart={cart} products={products} updateQuantity={updateQuantity} onClose={() => setShowOrderPreview(false)} onProceed={() => { setShowOrderPreview(false); handleWhatsAppOrder(); }} />
-                <SmallCatalogView show={showSmallCatalog} products={products} cart={cart} updateQuantity={updateQuantity} onClose={() => setShowSmallCatalog(false)} />
-                {selectedProduct && <ProductDetailsModal product={selectedProduct} cart={cart} updateQuantity={updateQuantity} onClose={() => setSelectedProduct(null)} />}
-                <CustomerInfoModal show={showCustomerForm} customerInfo={customerInfo} setCustomerInfo={setCustomerInfo} onCancel={() => setShowCustomerForm(false)} onSubmit={proceedWithOrder} isSending={isSendingOrder} orderStatus={orderStatus} />
-                <OrderHistoryModal show={showOrderHistory} orderHistory={orderHistory} onClose={() => setShowOrderHistory(false)} />
+                <OrderPreview show={showOrderPreview} cart={cart} products={products} updateQuantity={updateQuantity} onClose={() => closeOverlay(setShowOrderPreview)} onProceed={() => { setShowOrderPreview(false); handleWhatsAppOrder(); }} />
+                <SmallCatalogView show={showSmallCatalog} products={products} cart={cart} updateQuantity={updateQuantity} onClose={() => closeOverlay(setShowSmallCatalog)} />
+                {selectedProduct && <ProductDetailsModal product={selectedProduct} cart={cart} updateQuantity={updateQuantity} onClose={() => closeOverlay(setSelectedProduct, null)} />}
+                <CustomerInfoModal show={showCustomerForm} customerInfo={customerInfo} setCustomerInfo={setCustomerInfo} onCancel={() => closeOverlay(setShowCustomerForm)} onSubmit={proceedWithOrder} isSending={isSendingOrder} orderStatus={orderStatus} />
+                <OrderHistoryModal show={showOrderHistory} orderHistory={orderHistory} onClose={() => closeOverlay(setShowOrderHistory)} />
             </Suspense>
 
             {/* Quick Access Fab */}
             <button 
-                onClick={() => setShowSmallCatalog(true)} 
+                onClick={() => openOverlay(setShowSmallCatalog, true)} 
                 style={{ 
                     position: 'fixed', 
                     right: 20, 
