@@ -24,12 +24,12 @@ export default function CategorySection({
   if (showAll) {
     const displayProducts = maxProducts > 0 ? products.slice(0, maxProducts) : products;
     return (
-      <div>
+      <div id="categories">
         <div style={{
           display: 'grid',
-          gap: '20px',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          padding: '20px 0'
+          gap: '16px',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+          padding: '16px 0'
         }}>
           {displayProducts.map(product => (
             <ProductCard
@@ -42,20 +42,23 @@ export default function CategorySection({
           ))}
         </div>
         {maxProducts > 0 && products.length > maxProducts && (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
+          <div style={{ textAlign: 'center', padding: '24px 16px' }}>
             <button 
               onClick={() => onViewAll(categoryName)}
               style={{
                 backgroundColor: PRIMARY_COLOR,
                 color: 'white',
                 border: 'none',
-                padding: '12px 24px',
-                borderRadius: '8px',
+                padding: '14px 32px',
+                borderRadius: '30px',
                 cursor: 'pointer',
-                fontSize: '16px'
+                fontSize: '14px',
+                fontWeight: '600',
+                boxShadow: '0 4px 16px rgba(200, 90, 50, 0.3)',
+                transition: 'all 0.2s ease'
               }}
             >
-              Load More Products ({products.length - maxProducts} remaining)
+              Load More ({products.length - maxProducts} more)
             </button>
           </div>
         )}
@@ -157,6 +160,7 @@ export default function CategorySection({
         <img
           src={featuredProduct.image}
           alt={categoryName}
+          loading="lazy"
           style={{
             width: '100%',
             height: '100%',

@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { FaShoppingCart, FaArrowRight, FaTag, FaPercent } from 'react-icons/fa';
 import { PRIMARY_COLOR, ACCENT_COLOR, TEXT_COLOR } from '../constants/colors';
 
-// Simple "Video Ad" style feed
-// - Auto plays (loops)
-// - Shows one product at a time
-// - Large image + "Special Offer" badge
-// - "Cut Price" logic
+// Brand-focused Hero Banner
+// - Displays brand identity prominently
+// - Shows promotional products in a carousel below
+// - Call-to-action buttons
 export default function PromotionalVideoFeed({ products = [], onProductClick }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageErrors, setImageErrors] = useState(new Set());
     const [loadedImages, setLoadedImages] = useState(new Set());
 
-    // Preload all promotional images immediately
+    // Preload promotional images
     useEffect(() => {
         products.forEach(product => {
             const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
             const webpSrc = `/images/${cleanName}.webp`;
             const jpgSrc = `/images/${cleanName}.jpg`;
             
-            // Try WebP first
             const img = new Image();
             img.onload = () => setLoadedImages(prev => new Set([...prev, product.id]));
             img.onerror = () => {
-                // Fallback to JPG
                 const fallbackImg = new Image();
                 fallbackImg.onload = () => setLoadedImages(prev => new Set([...prev, product.id]));
                 fallbackImg.src = jpgSrc;
@@ -31,49 +29,33 @@ export default function PromotionalVideoFeed({ products = [], onProductClick }) 
         });
     }, [products]);
 
-    // Auto-play logic - increased to 6 seconds for better loading
+    // Auto-rotate every 5 seconds
     useEffect(() => {
         if (products.length <= 1) return;
-
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % products.length);
-        }, 6000); // Increased from 4 to 6 seconds
-
+        }, 5000);
         return () => clearInterval(interval);
     }, [products.length]);
-
-    // Preload images for promotional products
-    useEffect(() => {
-        products.forEach(product => {
-            const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
-            const img = new Image();
-            img.src = `/images/${cleanName}.jpg`;
-        });
-    }, [products]);
 
     if (!products.length) return null;
 
     const product = products[currentIndex];
-    
-    // Ensure numeric values for price comparisons
     const currentPrice = Number(product.price) || 0;
     const originalPrice = Number(product.cutPrice) || 0;
     const hasDiscount = originalPrice > 0 && originalPrice > currentPrice;
     const promoText = product.promoCommunicator ? String(product.promoCommunicator).trim() : '';
     const hasPromoText = promoText !== '' && promoText !== 'false' && promoText !== 'null';
 
-    // Image fallback logic handling (preserve case to match actual filenames)
     const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
     const localImage = `/images/${cleanName}.jpg`;
     const hasImageError = imageErrors.has(product.id);
 
-    const handleImageError = (e) => {
-        // Mark this product's image as failed, but don't hide - show placeholder instead
+    const handleImageError = () => {
         setImageErrors(prev => new Set([...prev, product.id]));
     };
 
     const handleImageLoad = () => {
-        // Remove from error set if it loads successfully
         setImageErrors(prev => {
             const newSet = new Set(prev);
             newSet.delete(product.id);
@@ -84,228 +66,309 @@ export default function PromotionalVideoFeed({ products = [], onProductClick }) 
     return (
         <div style={{
             width: '100%',
-            backgroundColor: '#000', // Video feel
-            position: 'relative', // Relative for absolute children positioning
-            overflow: 'hidden',
             marginBottom: '20px',
-            borderRadius: '0 0 24px 24px',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-            aspectRatio: '16/9', // Fixed aspect ratio - no shrinking
-            cursor: 'pointer'
-        }} onClick={() => onProductClick(product)}>
-
-            {/* Background / Image Area */}
-            <div style={{ 
-                width: '100%', 
-                height: '100%', 
-                backgroundColor: '#000', 
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
+        }}>
+            {/* Brand Hero Section */}
+            <div style={{
+                background: `linear-gradient(135deg, ${PRIMARY_COLOR} 0%, #8B4513 50%, ${ACCENT_COLOR} 100%)`,
+                padding: '24px 20px',
+                borderRadius: '20px 20px 0 0',
+                position: 'relative',
+                overflow: 'hidden',
             }}>
-                {!loadedImages.has(product.id) ? (
-                    // Loading state
-                    <div style={{
-                        color: 'white',
-                        fontSize: '18px',
-                        textAlign: 'center',
-                        opacity: 0.7
+                {/* Decorative circles */}
+                <div style={{
+                    position: 'absolute',
+                    top: '-30px',
+                    right: '-30px',
+                    width: '120px',
+                    height: '120px',
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.1)',
+                }} />
+                <div style={{
+                    position: 'absolute',
+                    bottom: '-20px',
+                    left: '10%',
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.08)',
+                }} />
+                
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                    <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '12px',
+                        marginBottom: '8px'
                     }}>
-                        <div style={{
-                            width: '40px',
-                            height: '40px',
-                            border: '3px solid rgba(255,255,255,0.3)',
-                            borderTop: '3px solid white',
-                            borderRadius: '50%',
-                            animation: 'spin 1s linear infinite',
-                            margin: '0 auto 10px'
-                        }} />
-                        Loading...
-                        <style>{`
-                            @keyframes spin {
-                                0% { transform: rotate(0deg); }
-                                100% { transform: rotate(360deg); }
-                            }
-                        `}</style>
+                        <FaShoppingCart style={{ color: 'white', fontSize: '24px' }} />
+                        <span style={{
+                            color: 'rgba(255,255,255,0.9)',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            letterSpacing: '2px',
+                            textTransform: 'uppercase'
+                        }}>
+                            Premium Groceries & Dairy
+                        </span>
                     </div>
-                ) : hasImageError ? (
-                    // Placeholder when image fails
-                    <div style={{
+                    
+                    <h1 style={{
+                        margin: '0 0 8px 0',
                         color: 'white',
-                        fontSize: '24px',
-                        textAlign: 'center',
-                        opacity: 0.7
+                        fontSize: '28px',
+                        fontWeight: '900',
+                        letterSpacing: '-0.5px',
+                        textShadow: '0 2px 10px rgba(0,0,0,0.3)'
                     }}>
-                        {product.name}
+                        Kookee Online
+                    </h1>
+                    
+                    <p style={{
+                        margin: 0,
+                        color: 'rgba(255,255,255,0.85)',
+                        fontSize: '14px',
+                        fontWeight: '500'
+                    }}>
+                        Fresh products delivered to your door
+                    </p>
+
+                    {/* CTA Buttons */}
+                    <div style={{
+                        display: 'flex',
+                        gap: '12px',
+                        marginTop: '16px',
+                        flexWrap: 'wrap'
+                    }}>
+                        <button
+                            onClick={() => onProductClick(product)}
+                            style={{
+                                background: 'white',
+                                color: PRIMARY_COLOR,
+                                border: 'none',
+                                padding: '10px 20px',
+                                borderRadius: '25px',
+                                fontSize: '14px',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                            }}
+                        >
+                            Shop Now <FaArrowRight size={12} />
+                        </button>
+                        <button
+                            onClick={() => {
+                                const el = document.getElementById('categories');
+                                el?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            style={{
+                                background: 'rgba(255,255,255,0.2)',
+                                color: 'white',
+                                border: '1px solid rgba(255,255,255,0.4)',
+                                padding: '10px 20px',
+                                borderRadius: '25px',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                backdropFilter: 'blur(5px)'
+                            }}
+                        >
+                            Browse Categories
+                        </button>
                     </div>
-                ) : (
-                    <img
-                        key={product.id} // Force re-render when product changes
-                        src={localImage}
-                        alt={product.name}
-                        onError={handleImageError}
-                        onLoad={handleImageLoad}
-                        loading="eager" // Load immediately for promotional feed
-                        decoding="async"
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'contain', // Change to contain for professional fitted look
-                            opacity: 0.9,
-                            transition: 'opacity 0.3s ease'
-                        }}
-                    />
-                )}
+                </div>
             </div>
 
-            {/* Overlay Content - Must be above image */}
+            {/* Promo Carousel Section */}
             <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 10, // Above the image
-                background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)',
-                padding: '24px',
-                color: 'white',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                pointerEvents: 'auto' // Ensure clicks work
+                background: '#fff',
+                padding: '16px',
+                borderRadius: '0 0 20px 20px',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
             }}>
-
-                {/* Badges */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
-                    <span style={{
-                        backgroundColor: ACCENT_COLOR,
-                        color: 'white',
-                        fontWeight: '700',
-                        fontSize: '11px',
-                        padding: '5px 12px',
-                        borderRadius: '50px', // Pill badge
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px'
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '12px'
+                }}>
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                     }}>
-                        Exclusive Deal
-                    </span>
-                    {/* Show cut price badge if discount exists */}
-                    {hasDiscount && (
+                        <FaTag style={{ color: ACCENT_COLOR }} />
                         <span style={{
-                            backgroundColor: '#ef4444', // Consistent Red
-                            color: 'white',
-                            fontWeight: '700',
-                            fontSize: '11px',
-                            padding: '5px 12px',
-                            borderRadius: '50px',
-                            letterSpacing: '0.5px'
+                            color: TEXT_COLOR,
+                            fontSize: '14px',
+                            fontWeight: '700'
                         }}>
-                            SAVE {Math.round(((originalPrice - currentPrice) / originalPrice) * 100)}%
+                            Today's Special Offers
                         </span>
-                    )}
-                    {/* Display promoCommunicator if present */}
-                    {hasPromoText && (
-                        <span style={{
-                            backgroundColor: PRIMARY_COLOR,
-                            color: 'white',
-                            fontWeight: '700',
-                            fontSize: '11px',
-                            padding: '5px 12px',
-                            borderRadius: '50px',
-                            letterSpacing: '0.5px'
-                        }}>
-                            {promoText}
-                        </span>
-                    )}
+                    </div>
+                    <div style={{
+                        display: 'flex',
+                        gap: '6px'
+                    }}>
+                        {products.map((_, idx) => (
+                            <div
+                                key={idx}
+                                onClick={() => setCurrentIndex(idx)}
+                                style={{
+                                    width: currentIndex === idx ? '16px' : '6px',
+                                    height: '6px',
+                                    borderRadius: '3px',
+                                    backgroundColor: currentIndex === idx ? ACCENT_COLOR : '#ddd',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s'
+                                }}
+                            />
+                        ))}
+                    </div>
                 </div>
 
-                {/* Title */}
-                <h2 style={{
-                    margin: '0 0 6px 0',
-                    fontSize: '22px', // Fixed font size - no shrinking
-                    fontWeight: '700',
-                    letterSpacing: '-0.5px',
-                    textShadow: '0 2px 10px rgba(0,0,0,0.5)'
-                }}>
-                    {product.name}
-                </h2>
-
-                {/* Price Logic - Show cut price if available */}
-                <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                    {hasDiscount ? (
-                        <>
+                {/* Product Card */}
+                <div
+                    onClick={() => onProductClick(product)}
+                    style={{
+                        display: 'flex',
+                        gap: '16px',
+                        padding: '12px',
+                        background: '#fafafa',
+                        borderRadius: '12px',
+                        cursor: 'pointer',
+                        border: `1px solid ${currentIndex === 0 ? PRIMARY_COLOR : 'transparent'}`
+                    }}
+                >
+                    <div style={{
+                        width: '80px',
+                        height: '80px',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        background: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                    }}>
+                        {!loadedImages.has(product.id) ? (
                             <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                background: 'rgba(255,255,255,0.1)',
-                                padding: '4px 12px',
-                                borderRadius: '8px',
-                                borderLeft: '3px solid #ccc'
-                            }}>
-                                <span style={{ fontSize: '10px', opacity: 0.8, fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px' }}>Was</span>
+                                width: '20px',
+                                height: '20px',
+                                border: '2px solid #ddd',
+                                borderTopColor: PRIMARY_COLOR,
+                                borderRadius: '50%',
+                                animation: 'spin 1s linear infinite'
+                            }} />
+                        ) : hasImageError ? (
+                            <span style={{ fontSize: '24px' }}>📦</span>
+                        ) : (
+                            <img
+                                src={localImage}
+                                alt={product.name}
+                                onError={handleImageError}
+                                onLoad={handleImageLoad}
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'contain'
+                                }}
+                            />
+                        )}
+                    </div>
+                    
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                            display: 'flex',
+                            gap: '6px',
+                            marginBottom: '4px',
+                            flexWrap: 'wrap'
+                        }}>
+                            {hasDiscount && (
                                 <span style={{
-                                    textDecoration: 'line-through',
-                                    opacity: 0.7,
-                                    fontSize: '15px',
-                                    fontWeight: '500'
+                                    background: '#ef4444',
+                                    color: 'white',
+                                    fontSize: '10px',
+                                    fontWeight: '700',
+                                    padding: '2px 8px',
+                                    borderRadius: '10px'
                                 }}>
-                                    UGX {originalPrice.toLocaleString()}
+                                    <FaPercent size={8} style={{ marginRight: '3px' }} />
+                                    {Math.round(((originalPrice - currentPrice) / originalPrice) * 100)}% OFF
                                 </span>
-                            </div>
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                background: 'rgba(212, 112, 74, 0.2)', // Terracotta tint
-                                padding: '4px 12px',
-                                borderRadius: '8px',
-                                borderLeft: `3px solid ${PRIMARY_COLOR}`
-                            }}>
-                                <span style={{ fontSize: '10px', color: PRIMARY_COLOR, fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px' }}>Now</span>
-                                <span style={{ color: PRIMARY_COLOR, fontSize: '24px', fontWeight: '900' }}>
+                            )}
+                            {hasPromoText && (
+                                <span style={{
+                                    background: PRIMARY_COLOR,
+                                    color: 'white',
+                                    fontSize: '10px',
+                                    fontWeight: '700',
+                                    padding: '2px 8px',
+                                    borderRadius: '10px'
+                                }}>
+                                    {promoText}
+                                </span>
+                            )}
+                        </div>
+                        <h3 style={{
+                            margin: 0,
+                            fontSize: '14px',
+                            fontWeight: '700',
+                            color: TEXT_COLOR,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                        }}>
+                            {product.name}
+                        </h3>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            marginTop: '4px'
+                        }}>
+                            {hasDiscount ? (
+                                <>
+                                    <span style={{
+                                        textDecoration: 'line-through',
+                                        color: '#999',
+                                        fontSize: '12px'
+                                    }}>
+                                        UGX {originalPrice.toLocaleString()}
+                                    </span>
+                                    <span style={{
+                                        color: PRIMARY_COLOR,
+                                        fontSize: '16px',
+                                        fontWeight: '800'
+                                    }}>
+                                        UGX {currentPrice.toLocaleString()}
+                                    </span>
+                                </>
+                            ) : (
+                                <span style={{
+                                    color: PRIMARY_COLOR,
+                                    fontSize: '16px',
+                                    fontWeight: '800'
+                                }}>
                                     UGX {currentPrice.toLocaleString()}
                                 </span>
-                            </div>
-                        </>
-                    ) : (
-                        <div style={{
-                            background: `linear-gradient(45deg, ${PRIMARY_COLOR}, #B85A3A)`,
-                            padding: '10px 20px',
-                            borderRadius: '12px',
-                            boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
-                        }}>
-                            <span style={{ color: 'white', fontSize: '22px', fontWeight: '800' }}>UGX {currentPrice.toLocaleString()}</span>
+                            )}
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
 
-            {/* Progress / Dots */}
-            <div style={{
-                position: 'absolute',
-                bottom: '8px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                zIndex: 15, // Above overlay content
-                display: 'flex',
-                gap: '4px'
-            }}>
-                {products.map((_, idx) => (
-                    <div
-                        key={idx}
-                        style={{
-                            width: currentIndex === idx ? '16px' : '4px',
-                            height: '4px',
-                            borderRadius: '2px',
-                            backgroundColor: currentIndex === idx ? ACCENT_COLOR : 'rgba(255,255,255,0.5)',
-                            transition: 'all 0.3s'
-                        }}
-                    />
-                ))}
-            </div>
-
+            <style>{`
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
         </div>
     );
 }

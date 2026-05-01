@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import * as XLSX from 'xlsx';
 import { FaArrowLeft, FaSync } from 'react-icons/fa';
 
@@ -7,13 +7,15 @@ import PromotionalVideoFeed from './components/PromotionalVideoFeed.jsx';
 import Header from './components/Header.jsx';
 import MenuTabs from './components/MenuTabs.jsx';
 import CategorySection from './components/CategorySection.jsx';
-import ProductDetailsModal from './components/ProductDetailsModal.jsx';
-import CustomerInfoModal from './components/CustomerInfoModal.jsx';
-import OrderHistoryModal from './components/OrderHistoryModal.jsx';
 import CartSummary from './components/CartSummary.jsx';
 import EmptyState from './components/EmptyState.jsx';
-import OrderPreview from './components/OrderPreview.jsx';
-import SmallCatalogView from './components/SmallCatalogView.jsx';
+
+// Lazy-loaded modal components for code splitting
+const ProductDetailsModal = lazy(() => import('./components/ProductDetailsModal.jsx'));
+const CustomerInfoModal = lazy(() => import('./components/CustomerInfoModal.jsx'));
+const OrderHistoryModal = lazy(() => import('./components/OrderHistoryModal.jsx'));
+const OrderPreview = lazy(() => import('./components/OrderPreview.jsx'));
+const SmallCatalogView = lazy(() => import('./components/SmallCatalogView.jsx'));
 
 // Constants
 import { PRIMARY_COLOR, ACCENT_COLOR, DANGER_COLOR, BACKGROUND_COLOR, CARD_BACKGROUND, TEXT_COLOR, LIGHT_TEXT_COLOR } from './constants/colors';
@@ -641,58 +643,60 @@ function App() {
                 )}
             </div>
 
-            {/* Modals */}
-            <OrderPreview
-                show={showOrderPreview}
-                cart={cart}
-                products={products}
-                updateQuantity={updateQuantity}
-                onClose={() => setShowOrderPreview(false)}
-                onProceed={() => {
-                    setShowOrderPreview(false);
-                    handleWhatsAppOrder();
-                }}
-            />
+            {/* Modals - wrapped in Suspense for lazy loading */}
+            <Suspense fallback={null}>
+                <OrderPreview
+                    show={showOrderPreview}
+                    cart={cart}
+                    products={products}
+                    updateQuantity={updateQuantity}
+                    onClose={() => setShowOrderPreview(false)}
+                    onProceed={() => {
+                        setShowOrderPreview(false);
+                        handleWhatsAppOrder();
+                    }}
+                />
 
-            <SmallCatalogView
-                show={showSmallCatalog}
-                products={products}
-                cart={cart}
-                updateQuantity={updateQuantity}
-                onClose={() => setShowSmallCatalog(false)}
-            />
-
-            {selectedProduct && (
-                <ProductDetailsModal
-                    product={selectedProduct}
+                <SmallCatalogView
+                    show={showSmallCatalog}
+                    products={products}
                     cart={cart}
                     updateQuantity={updateQuantity}
-                    onClose={() => setSelectedProduct(null)}
+                    onClose={() => setShowSmallCatalog(false)}
                 />
-            )}
 
-            <CustomerInfoModal
-                show={showCustomerForm}
-                customerInfo={customerInfo}
-                setCustomerInfo={setCustomerInfo}
-                onCancel={() => setShowCustomerForm(false)}
-                onSubmit={() => {
-                    if (customerInfo.name.trim() && customerInfo.phone.trim()) {
-                        localStorage.setItem('customerInfo', JSON.stringify(customerInfo));
-                        proceedWithOrder();
-                    } else {
-                        alert('Please fill in all fields');
-                    }
-                }}
-                isSending={isSendingOrder}
-                orderStatus={orderStatus}
-            />
+                {selectedProduct && (
+                    <ProductDetailsModal
+                        product={selectedProduct}
+                        cart={cart}
+                        updateQuantity={updateQuantity}
+                        onClose={() => setSelectedProduct(null)}
+                    />
+                )}
 
-            <OrderHistoryModal
-                show={showOrderHistory}
-                orderHistory={orderHistory}
-                onClose={() => setShowOrderHistory(false)}
-            />
+                <CustomerInfoModal
+                    show={showCustomerForm}
+                    customerInfo={customerInfo}
+                    setCustomerInfo={setCustomerInfo}
+                    onCancel={() => setShowCustomerForm(false)}
+                    onSubmit={() => {
+                        if (customerInfo.name.trim() && customerInfo.phone.trim()) {
+                            localStorage.setItem('customerInfo', JSON.stringify(customerInfo));
+                            proceedWithOrder();
+                        } else {
+                            alert('Please fill in all fields');
+                        }
+                    }}
+                    isSending={isSendingOrder}
+                    orderStatus={orderStatus}
+                />
+
+                <OrderHistoryModal
+                    show={showOrderHistory}
+                    orderHistory={orderHistory}
+                    onClose={() => setShowOrderHistory(false)}
+                />
+            </Suspense>
 
             {/* Hidden admin utility - Sync Images */}
             <div style={{ textAlign: 'center', padding: '40px 20px', marginTop: '40px' }}>

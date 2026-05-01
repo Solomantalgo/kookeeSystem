@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaTimes, FaMinus, FaPlus } from 'react-icons/fa';
 import { PRIMARY_COLOR, CARD_BACKGROUND, ACCENT_COLOR, DANGER_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, BACKGROUND_COLOR } from '../constants/colors';
 
 export default function ProductDetailsModal({ product, cart = {}, updateQuantity = () => { }, onClose = () => { } }) {
   const currentQty = cart[product.id] || 0;
   const [qtyInput, setQtyInput] = React.useState(currentQty.toString());
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   // Lock body scroll when open
   useEffect(() => {
@@ -88,21 +90,61 @@ export default function ProductDetailsModal({ product, cart = {}, updateQuantity
           backgroundColor: '#f5f5f4',
           display: 'flex',
           justifyContent: 'center',
+          alignItems: 'center',
           padding: '20px',
           minHeight: '250px'
         }}>
-          {(() => {
-            const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
-            const localImage = `/images/${cleanName}.jpg`;
-            return (
-              <img
-                src={localImage}
-                alt={product.name}
-                onError={(e) => { e.target.style.display = 'none'; }}
-                style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }}
-              />
-            );
-          })()}
+          {isLoading ? (
+            // Loading skeleton
+            <div style={{
+              width: '100%',
+              maxWidth: '300px',
+              height: '250px',
+              backgroundColor: '#e5e5e5',
+              borderRadius: '8px',
+              animation: 'pulse 1.5s ease-in-out infinite'
+            }}>
+              <style>{`
+                @keyframes pulse {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0.5; }
+                }
+              `}</style>
+            </div>
+          ) : hasError ? (
+            // Error fallback - local inline div with no external requests
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              maxWidth: '300px',
+              height: '250px',
+              color: LIGHT_TEXT_COLOR,
+              fontSize: '14px',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: '48px', marginBottom: '12px' }}>📷</div>
+              Image not available
+            </div>
+          ) : (
+            <div style={{ width: '100%', maxWidth: '300px', textAlign: 'center' }}>
+              {(() => {
+                const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+                const localImage = `/images/${cleanName}.jpg`;
+                return (
+                  <img
+                    src={localImage}
+                    alt={product.name}
+                    onLoad={() => setIsLoading(false)}
+                    onError={() => { setHasError(true); setIsLoading(false); }}
+                    style={{ maxWidth: '100%', maxHeight: '300px', objectFit: 'contain' }}
+                  />
+                );
+              })()}
+            </div>
+          )}
         </div>
 
         {/* Details Section */}

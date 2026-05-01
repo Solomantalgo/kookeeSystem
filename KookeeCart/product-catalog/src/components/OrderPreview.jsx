@@ -144,7 +144,7 @@ export default function OrderPreview({ show, cart = {}, products = [], updateQua
                     <img
                       src={localImage}
                       alt={it.name}
-                      onError={(e) => { e.target.src = 'https://via.placeholder.com/64'; }} // Still use small placeholder if needed in preview
+                      onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:64px;height:64px;color:#9ca3af;font-size:12px;text-align:center;"><div style="font-size:24px;margin-bottom:4px;">📷</div>No image</div>'; }} // Still use small placeholder if needed in preview
                       style={{ width: 64, height: 64, objectFit: 'contain', borderRadius: 6 }}
                     />
                   );

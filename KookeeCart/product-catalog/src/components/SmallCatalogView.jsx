@@ -244,6 +244,7 @@ export default function SmallCatalogView({
                                             {p.image && (
                                                 <img
                                                     src={p.image} alt={p.imageAlt || p.name}
+                                                    loading="lazy"
                                                     style={{
                                                         width: '60px', height: '60px', objectFit: 'contain',
                                                         borderRadius: '8px', flexShrink: 0,

@@ -92,17 +92,25 @@ const ProductCard = ({ product, cart, updateQuantity, onProductClick }) => {
       className="product-card-container"
       style={{
         backgroundColor: CARD_BACKGROUND,
-        borderRadius: '16px',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
+        borderRadius: '20px',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         cursor: 'pointer',
-        minHeight: '200px',
+        minHeight: '280px',
         position: 'relative',
-        border: '1px solid #f1f5f9',
+        border: '1px solid rgba(0,0,0,0.04)',
         height: '100%',
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
+      }}
+      onMouseOver={(e) => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = '0 12px 28px rgba(0,0,0,0.12)';
+      }}
+      onMouseOut={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.08)';
       }}
     >
       {/* Loading Skeleton */}
@@ -113,17 +121,18 @@ const ProductCard = ({ product, cart, updateQuantity, onProductClick }) => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#fafafa',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 1
+          zIndex: 1,
+          borderRadius: '20px 20px 0 0'
         }}>
           <div style={{
-            width: '40px',
-            height: '40px',
-            border: '3px solid #e0e0e0',
-            borderTop: '3px solid PRIMARY_COLOR',
+            width: '32px',
+            height: '32px',
+            border: '3px solid #f0f0f0',
+            borderTop: `3px solid ${PRIMARY_COLOR}`,
             borderRadius: '50%',
             animation: 'spin 1s linear infinite'
           }} />
@@ -136,16 +145,17 @@ const ProductCard = ({ product, cart, updateQuantity, onProductClick }) => {
         </div>
       )}
 
-      {/* Image Container */}
+      {/* Image Container - Improved */}
       <div style={{
         width: '100%',
-        height: '120px',
-        backgroundColor: '#f9f9f9',
+        height: '140px',
+        backgroundColor: '#fafafa',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        borderRadius: '20px 20px 0 0'
       }}>
         {!hasError ? (
           <img
@@ -153,10 +163,12 @@ const ProductCard = ({ product, cart, updateQuantity, onProductClick }) => {
             src={imgSrc}
             alt={product.name}
             onError={handleImageError}
+            loading="lazy"
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'contain',
+              padding: '12px',
               opacity: isLoading ? 0 : 1,
               transition: 'opacity 0.3s ease'
             }}
@@ -170,84 +182,161 @@ const ProductCard = ({ product, cart, updateQuantity, onProductClick }) => {
             color: LIGHT_TEXT_COLOR,
             fontSize: '12px',
             textAlign: 'center',
-            padding: '8px'
+            padding: '16px'
           }}>
-            <div style={{ fontSize: '24px', marginBottom: '4px' }}>📷</div>
-            Image not available
+            <div style={{ fontSize: '32px', marginBottom: '8px', opacity: 0.5 }}>📷</div>
+            <span style={{ fontSize: '11px', opacity: 0.7 }}>Image unavailable</span>
           </div>
         )}
       </div>
 
-      {/* CONTENT AREA */}
-      <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+      {/* CONTENT AREA - Improved spacing */}
+      <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         <h3 style={{
-          fontSize: '15px', fontWeight: '700', color: TEXT_COLOR, margin: '0 0 4px 0', lineHeight: '1.3'
+          fontSize: '14px', 
+          fontWeight: '600', 
+          color: TEXT_COLOR, 
+          margin: '0 0 8px 0', 
+          lineHeight: '1.4',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+          minHeight: '40px'
         }}>
           {product.name}
         </h3>
 
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
-          {/* Status Badge - Simplified */}
-          <span style={{
-            fontSize: '11px', fontWeight: '700',
-            color: isOutOfStock ? DANGER_COLOR : '#059669',
-            backgroundColor: isOutOfStock ? '#fef2f2' : '#ecfdf5',
-            padding: '2px 6px', borderRadius: '4px'
-          }}>
-            {isOutOfStock ? 'Out of Stock' : 'In Stock'}
-          </span>
-
-          {/* Cut Price Badge if applicable */}
+        {/* Badges - Improved styling */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
           {product.cutPrice > 0 && (
-            <span style={{ fontSize: '11px', fontWeight: '700', color: '#dc2626', backgroundColor: '#fef2f2', padding: '2px 6px', borderRadius: '4px' }}>
+            <span style={{ 
+              fontSize: '10px', 
+              fontWeight: '700', 
+              color: '#fff', 
+              backgroundColor: DANGER_COLOR, 
+              padding: '3px 8px', 
+              borderRadius: '12px',
+              letterSpacing: '0.3px'
+            }}>
               -{Math.round(((product.cutPrice - product.price) / product.cutPrice) * 100)}%
             </span>
           )}
-          
-          {/* Promo Communicator Badge */}
           {product.promoCommunicator && product.promoCommunicator.trim() && (
-            <span style={{ fontSize: '11px', fontWeight: '700', color: PRIMARY_COLOR, backgroundColor: '#ecfdf5', padding: '2px 6px', borderRadius: '4px' }}>
+            <span style={{ 
+              fontSize: '10px', 
+              fontWeight: '600', 
+              color: ACCENT_COLOR, 
+              backgroundColor: '#FFF8F0', 
+              padding: '3px 8px', 
+              borderRadius: '12px',
+              border: '1px solid rgba(229, 138, 50, 0.3)'
+            }}>
               {product.promoCommunicator}
             </span>
           )}
+          <span style={{
+            fontSize: '10px', 
+            fontWeight: '600',
+            color: isOutOfStock ? DANGER_COLOR : '#059669',
+            backgroundColor: isOutOfStock ? '#FEF2F2' : '#F0FDF4',
+            padding: '3px 8px', 
+            borderRadius: '12px'
+          }}>
+            {isOutOfStock ? 'Out of Stock' : 'In Stock'}
+          </span>
         </div>
 
-        {/* Price Display */}
-        <div style={{ marginTop: 'auto', marginBottom: '12px', fontSize: '15px', fontWeight: '700', color: PRIMARY_COLOR }}>
-          {product.cutPrice > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1.2' }}>
-              <span style={{ textDecoration: 'line-through', color: LIGHT_TEXT_COLOR, fontSize: '12px', fontWeight: '500' }}>
-                UGX {Number(product.cutPrice).toLocaleString()}
-              </span>
-              <span>
-                {Number(product.price).toLocaleString()}
-                <span style={{ fontSize: '11px', fontWeight: '500', marginLeft: '2px', color: LIGHT_TEXT_COLOR }}>UGX</span>
-              </span>
-            </div>
-          ) : (
-            <span>
-              {Number(product.price).toLocaleString()}
-              <span style={{ fontSize: '11px', fontWeight: '500', marginLeft: '2px', color: LIGHT_TEXT_COLOR }}>UGX</span>
-            </span>
-          )}
+        {/* Price Display - Removed - contact for price */}
+        <div style={{ marginTop: 'auto', marginBottom: '12px' }}>
+          <span style={{ color: PRIMARY_COLOR, fontSize: '13px', fontWeight: '600' }}>
+            Contact for price
+          </span>
         </div>
 
-        {/* ACTION AREA - Large Tap Targets */}
+        {/* ACTION AREA - Improved button */}
         {currentQuantity === 0 ? (
           <button
             onClick={(e) => { e.stopPropagation(); updateQuantity(product.id, 1); }}
             disabled={isOutOfStock}
             style={{
-              backgroundColor: isOutOfStock ? '#e5e5e5' : ACCENT_COLOR,
+              backgroundColor: isOutOfStock ? '#f5f5f5' : `linear-gradient(135deg, ${ACCENT_COLOR} 0%, #D4772A 100%)`,
               color: isOutOfStock ? '#999' : 'white',
               width: '100%',
               padding: '12px',
-              fontSize: '15px',
-              borderRadius: '12px',
+              fontSize: '14px',
+              borderRadius: '14px',
               fontWeight: '700',
               border: 'none',
-              cursor: isOutOfStock ? 'default' : 'pointer',
+              cursor: isOutOfStock ? 'not-allowed' : 'pointer',
               display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              boxShadow: isOutOfStock ? 'none' : '0 4px 12px rgba(229, 138, 50, 0.3)',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <FaShoppingCart size={14} />
+            {isOutOfStock ? 'Unavailable' : 'Add to Cart'}
+          </button>
+        ) : (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#fafafa',
+            borderRadius: '14px',
+            padding: '4px',
+            border: '1px solid #f0f0f0'
+          }}>
+            <button
+              onClick={(e) => { e.stopPropagation(); updateQuantity(product.id, -1); }}
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '12px',
+                border: 'none',
+                backgroundColor: 'white',
+                color: TEXT_COLOR,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                padding: 0
+              }}
+            >
+              <FaMinus size={12} />
+            </button>
+            <span style={{ fontSize: '16px', fontWeight: '700', color: TEXT_COLOR, minWidth: '30px', textAlign: 'center' }}>
+              {currentQuantity}
+            </span>
+            <button
+              onClick={(e) => { e.stopPropagation(); updateQuantity(product.id, 1); }}
+              style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '12px',
+                border: 'none',
+                backgroundColor: PRIMARY_COLOR,
+                color: 'white',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 4px rgba(200, 90, 50, 0.3)',
+                padding: 0
+              }}
+            >
+              <FaPlus size={12} />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
