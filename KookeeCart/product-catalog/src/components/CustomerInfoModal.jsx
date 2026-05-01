@@ -15,9 +15,11 @@ const CustomerInfoModal = ({
   const [locationError, setLocationError] = useState(null);
   const [confirmLocation, setConfirmLocation] = useState(false);
 
+  const [isLocationConfirmed, setIsLocationConfirmed] = useState(false);
+
   // Automatic Location Detection on Open
   useEffect(() => {
-    if (show && !customerInfo.location) {
+    if (show) {
       // Small delay to ensure modal is fully rendered and not considered an overlay
       const timer = setTimeout(() => {
         handleGetLocation();
@@ -37,6 +39,7 @@ const CustomerInfoModal = ({
     setIsGettingLocation(true);
     setLocationError(null);
     setConfirmLocation(false);
+    setIsLocationConfirmed(false);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -64,6 +67,7 @@ const CustomerInfoModal = ({
   const handleRejectLocation = () => {
     setCustomerInfo(prev => ({ ...prev, location: '' }));
     setConfirmLocation(false);
+    setIsLocationConfirmed(false);
   };
 
   return (
@@ -198,7 +202,10 @@ const CustomerInfoModal = ({
                 </p>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
-                    onClick={() => setConfirmLocation(false)}
+                    onClick={() => {
+                      setConfirmLocation(false);
+                      setIsLocationConfirmed(true);
+                    }}
                     style={{ flex: 1, padding: '8px', borderRadius: '8px', border: 'none', background: '#16a34a', color: 'white', fontWeight: '700', cursor: 'pointer', fontSize: '13px' }}
                   >
                     Yes, Correct
@@ -213,7 +220,7 @@ const CustomerInfoModal = ({
               </div>
             ) : (
               <div>
-                {customerInfo.location && (
+                {isLocationConfirmed && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#166534', marginBottom: '12px' }}>
                     <FaCheckCircle size={16} />
                     <span style={{ fontWeight: '700', fontSize: '13px' }}>Location Confirmed</span>

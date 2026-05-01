@@ -41,7 +41,6 @@ const ProductCard = ({ product, cart, updateQuantity, onProductClick }) => {
 
   return (
     <div
-      onClick={() => onProductClick(product)}
       className={`product-card ${isPromo ? 'promo-card' : ''}`}
       style={{
         backgroundColor: CARD_BACKGROUND,
@@ -61,6 +60,32 @@ const ProductCard = ({ product, cart, updateQuantity, onProductClick }) => {
         transform: 'translateZ(0)'
       }}
     >
+      {/* Details Button - Top Right */}
+      <button 
+        onClick={(e) => { e.stopPropagation(); onProductClick(product); }}
+        style={{
+          position: 'absolute',
+          top: '12px',
+          right: '12px',
+          background: 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(4px)',
+          border: '1px solid rgba(0,0,0,0.05)',
+          color: TEXT_COLOR,
+          padding: '4px 8px',
+          borderRadius: '10px',
+          fontSize: '10px',
+          fontWeight: '700',
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          cursor: 'pointer',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        }}
+      >
+        <span style={{ fontSize: '12px', color: PRIMARY_COLOR }}>ⓘ</span> Details
+      </button>
+
       {/* Promo Badge */}
       {isPromo && (
         <div style={{
@@ -123,7 +148,7 @@ const ProductCard = ({ product, cart, updateQuantity, onProductClick }) => {
           fontSize: '14px', 
           fontWeight: '700', 
           color: TEXT_COLOR, 
-          margin: '0 0 6px 0', 
+          margin: '0 0 2px 0', 
           lineHeight: '1.4',
           display: '-webkit-box',
           WebkitLineClamp: 2,

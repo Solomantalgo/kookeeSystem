@@ -67,7 +67,11 @@ function App() {
 
         const savedCustomer = localStorage.getItem('customerInfo');
         const savedOrders = localStorage.getItem('orderHistory');
-        if (savedCustomer) setCustomerInfo(JSON.parse(savedCustomer));
+        if (savedCustomer) {
+            const parsed = JSON.parse(savedCustomer);
+            // Always clear location and address on load to ensure fresh data
+            setCustomerInfo({ ...parsed, location: '', address: '' });
+        }
         if (savedOrders) setOrderHistory(JSON.parse(savedOrders));
     }, []);
 
@@ -240,7 +244,9 @@ function App() {
         }
 
         setOrderStatus('success');
-        localStorage.setItem('customerInfo', JSON.stringify(customerInfo));
+        // Save name and phone, but NEVER the location or address
+        const { location, address, ...infoToSave } = customerInfo;
+        localStorage.setItem('customerInfo', JSON.stringify(infoToSave));
         
         setTimeout(() => {
             window.open(whatsappUrl, '_blank');
