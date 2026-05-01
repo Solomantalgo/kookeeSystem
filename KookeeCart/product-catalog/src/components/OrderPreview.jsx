@@ -11,24 +11,13 @@ function OrderPreviewQuantityControl({ item, updateQuantity }) {
   }, [item.qty]);
 
   const handleQtyInputChange = (value) => {
-    if (value === '') {
-      setQtyInput('');
-      return;
-    }
-    if (/^\d*$/.test(value)) {
-      setQtyInput(value);
-      const newQty = parseInt(value, 10);
-      if (!isNaN(newQty)) {
-        updateQuantity(item.id, newQty - item.qty);
-      }
-    }
+    setQtyInput(value);
+    updateQuantity(item.id, value);
   };
 
   const handleQtyBlur = () => {
-    if (qtyInput === '' || isNaN(parseInt(qtyInput))) {
+    if (qtyInput === '') {
       setQtyInput(item.qty.toString());
-    } else {
-      setQtyInput(parseInt(qtyInput, 10).toString());
     }
   };
 
@@ -46,13 +35,12 @@ function OrderPreviewQuantityControl({ item, updateQuantity }) {
       </button>
 
       <input
-        type="number"
-        min="0"
+        type="text"
         value={qtyInput}
         onChange={(e) => handleQtyInputChange(e.target.value)}
         onBlur={handleQtyBlur}
         style={{
-          width: '44px', textAlign: 'center', fontSize: '14px', fontWeight: 700,
+          width: '56px', textAlign: 'center', fontSize: '13px', fontWeight: 700,
           border: '1px solid #eee', borderRadius: '6px', padding: '4px 0',
           backgroundColor: '#f9fafb', color: TEXT_COLOR, outline: 'none'
         }}
@@ -81,8 +69,6 @@ export default function OrderPreview({ show, cart = {}, products = [], updateQua
       return p ? { ...p, qty } : null;
     })
     .filter(Boolean);
-
-  const total = items.reduce((s, it) => s + it.price * it.qty, 0);
 
   return (
     <div style={{
@@ -137,21 +123,9 @@ export default function OrderPreview({ show, cart = {}, products = [], updateQua
                 border: '1px solid #f0f0f0',
                 background: 'white'
               }}>
-                {(() => {
-                  const cleanName = it.name ? it.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
-                  const localImage = `/images/${cleanName}.jpg`;
-                  return (
-                    <img
-                      src={localImage}
-                      alt={it.name}
-                      onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;width:64px;height:64px;color:#9ca3af;font-size:12px;text-align:center;"><div style="font-size:24px;margin-bottom:4px;">📷</div>No image</div>'; }} // Still use small placeholder if needed in preview
-                      style={{ width: 64, height: 64, objectFit: 'contain', borderRadius: 6 }}
-                    />
-                  );
-                })()}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, color: TEXT_COLOR, fontSize: '14px' }}>{it.name}</div>
-                  <div style={{ color: LIGHT_TEXT_COLOR, fontSize: 13 }}>UGX {it.price.toLocaleString()}</div>
+                  <div style={{ color: LIGHT_TEXT_COLOR, fontSize: 13 }}>{it.brand}</div>
                 </div>
 
                 <OrderPreviewQuantityControl item={it} updateQuantity={updateQuantity} />
@@ -179,17 +153,6 @@ export default function OrderPreview({ show, cart = {}, products = [], updateQua
           padding: '16px 20px',
           background: 'white'
         }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 16
-          }}>
-            <div style={{ fontWeight: 800, color: PRIMARY_COLOR, fontSize: 18 }}>
-              Total: UGX {total.toLocaleString()}
-            </div>
-          </div>
-
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               onClick={onClose}
@@ -203,7 +166,7 @@ export default function OrderPreview({ show, cart = {}, products = [], updateQua
                 color: TEXT_COLOR
               }}
             >
-              Close
+              Back to Catalog
             </button>
             <button
               onClick={onProceed}

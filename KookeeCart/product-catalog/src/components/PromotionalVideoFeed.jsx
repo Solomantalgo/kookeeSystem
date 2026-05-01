@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { FaShoppingCart, FaArrowRight, FaTag, FaPercent } from 'react-icons/fa';
+import { FaShoppingCart, FaArrowRight, FaTag } from 'react-icons/fa';
 import { PRIMARY_COLOR, ACCENT_COLOR, TEXT_COLOR } from '../constants/colors';
 
-// Brand-focused Hero Banner
-// - Displays brand identity prominently
-// - Shows promotional products in a carousel below
-// - Call-to-action buttons
+// Brand-focused Hero Banner - Prices Removed
 export default function PromotionalVideoFeed({ products = [], onProductClick }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [imageErrors, setImageErrors] = useState(new Set());
@@ -14,7 +11,8 @@ export default function PromotionalVideoFeed({ products = [], onProductClick }) 
     // Preload promotional images
     useEffect(() => {
         products.forEach(product => {
-            const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+            let cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+            if (!cleanName) cleanName = 'product';
             const webpSrc = `/images/${cleanName}.webp`;
             const jpgSrc = `/images/${cleanName}.jpg`;
             
@@ -29,25 +27,23 @@ export default function PromotionalVideoFeed({ products = [], onProductClick }) 
         });
     }, [products]);
 
-    // Auto-rotate every 5 seconds
+    // Auto-rotate every 6 seconds
     useEffect(() => {
         if (products.length <= 1) return;
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % products.length);
-        }, 5000);
+        }, 6000);
         return () => clearInterval(interval);
     }, [products.length]);
 
     if (!products.length) return null;
 
     const product = products[currentIndex];
-    const currentPrice = Number(product.price) || 0;
-    const originalPrice = Number(product.cutPrice) || 0;
-    const hasDiscount = originalPrice > 0 && originalPrice > currentPrice;
     const promoText = product.promoCommunicator ? String(product.promoCommunicator).trim() : '';
     const hasPromoText = promoText !== '' && promoText !== 'false' && promoText !== 'null';
 
-    const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+    let cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+    if (!cleanName) cleanName = 'product';
     const localImage = `/images/${cleanName}.jpg`;
     const hasImageError = imageErrors.has(product.id);
 
@@ -71,111 +67,93 @@ export default function PromotionalVideoFeed({ products = [], onProductClick }) 
             {/* Brand Hero Section */}
             <div style={{
                 background: `linear-gradient(135deg, ${PRIMARY_COLOR} 0%, #8B4513 50%, ${ACCENT_COLOR} 100%)`,
-                padding: '24px 20px',
-                borderRadius: '20px 20px 0 0',
+                padding: '30px 24px',
+                borderRadius: '24px 24px 0 0',
                 position: 'relative',
                 overflow: 'hidden',
             }}>
-                {/* Decorative circles */}
-                <div style={{
-                    position: 'absolute',
-                    top: '-30px',
-                    right: '-30px',
-                    width: '120px',
-                    height: '120px',
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.1)',
-                }} />
-                <div style={{
-                    position: 'absolute',
-                    bottom: '-20px',
-                    left: '10%',
-                    width: '80px',
-                    height: '80px',
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.08)',
-                }} />
+                {/* Decorative Elements */}
+                <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.1)' }} />
                 
                 <div style={{ position: 'relative', zIndex: 1 }}>
                     <div style={{ 
                         display: 'flex', 
                         alignItems: 'center', 
-                        gap: '12px',
+                        gap: '10px',
                         marginBottom: '8px'
                     }}>
-                        <FaShoppingCart style={{ color: 'white', fontSize: '24px' }} />
+                        <FaShoppingCart style={{ color: 'white', fontSize: '20px' }} />
                         <span style={{
                             color: 'rgba(255,255,255,0.9)',
-                            fontSize: '12px',
-                            fontWeight: '600',
-                            letterSpacing: '2px',
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            letterSpacing: '1.5px',
                             textTransform: 'uppercase'
                         }}>
-                            Premium Groceries & Dairy
+                            Kookee Premium
                         </span>
                     </div>
                     
                     <h1 style={{
-                        margin: '0 0 8px 0',
+                        margin: '0 0 10px 0',
                         color: 'white',
-                        fontSize: '28px',
+                        fontSize: '32px',
                         fontWeight: '900',
-                        letterSpacing: '-0.5px',
-                        textShadow: '0 2px 10px rgba(0,0,0,0.3)'
+                        letterSpacing: '-1px',
+                        lineHeight: '1.1'
                     }}>
-                        Kookee Online
+                        Freshness<br />Delivered.
                     </h1>
                     
                     <p style={{
-                        margin: 0,
-                        color: 'rgba(255,255,255,0.85)',
+                        margin: '0 0 20px 0',
+                        color: 'rgba(255,255,255,0.9)',
                         fontSize: '14px',
-                        fontWeight: '500'
+                        fontWeight: '500',
+                        maxWidth: '200px'
                     }}>
-                        Fresh products delivered to your door
+                        Top-quality groceries directly to your home.
                     </p>
 
-                    {/* CTA Buttons */}
-                    <div style={{
-                        display: 'flex',
-                        gap: '12px',
-                        marginTop: '16px',
-                        flexWrap: 'wrap'
-                    }}>
+                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                         <button
                             onClick={() => onProductClick(product)}
                             style={{
                                 background: 'white',
                                 color: PRIMARY_COLOR,
                                 border: 'none',
-                                padding: '10px 20px',
-                                borderRadius: '25px',
+                                padding: '12px 24px',
+                                borderRadius: '16px',
                                 fontSize: '14px',
-                                fontWeight: '700',
+                                fontWeight: '800',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '8px',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+                                boxShadow: '0 4px 15px rgba(0,0,0,0.15)'
                             }}
                         >
-                            Shop Now <FaArrowRight size={12} />
+                            View Item <FaArrowRight size={12} />
                         </button>
                         <button
                             onClick={() => {
-                                const el = document.getElementById('categories');
-                                el?.scrollIntoView({ behavior: 'smooth' });
+                                const el = document.getElementById('categories-anchor');
+                                if (el) {
+                                    const yOffset = -140; // Account for fixed header
+                                    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                                    window.scrollTo({ top: y, behavior: 'smooth' });
+                                }
                             }}
                             style={{
                                 background: 'rgba(255,255,255,0.2)',
                                 color: 'white',
                                 border: '1px solid rgba(255,255,255,0.4)',
-                                padding: '10px 20px',
-                                borderRadius: '25px',
+                                padding: '12px 24px',
+                                borderRadius: '16px',
                                 fontSize: '14px',
-                                fontWeight: '600',
+                                fontWeight: '700',
                                 cursor: 'pointer',
-                                backdropFilter: 'blur(5px)'
+                                backdropFilter: 'blur(10px)'
                             }}
                         >
                             Browse Categories
@@ -184,141 +162,104 @@ export default function PromotionalVideoFeed({ products = [], onProductClick }) 
                 </div>
             </div>
 
-            {/* Promo Carousel Section */}
+            {/* Promo Preview Section */}
             <div style={{
                 background: '#fff',
                 padding: '16px',
-                borderRadius: '0 0 20px 20px',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
+                borderRadius: '0 0 24px 24px',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.06)'
             }}>
                 <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    marginBottom: '12px'
+                    marginBottom: '16px'
                 }}>
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                    }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <FaTag style={{ color: ACCENT_COLOR }} />
-                        <span style={{
-                            color: TEXT_COLOR,
-                            fontSize: '14px',
-                            fontWeight: '700'
-                        }}>
-                            Today's Special Offers
+                        <span style={{ color: TEXT_COLOR, fontSize: '14px', fontWeight: '800' }}>
+                            Featured Promotions
                         </span>
                     </div>
-                    <div style={{
-                        display: 'flex',
-                        gap: '6px'
-                    }}>
+                    <div style={{ display: 'flex', gap: '5px' }}>
                         {products.map((_, idx) => (
                             <div
                                 key={idx}
                                 onClick={() => setCurrentIndex(idx)}
                                 style={{
-                                    width: currentIndex === idx ? '16px' : '6px',
+                                    width: currentIndex === idx ? '18px' : '6px',
                                     height: '6px',
                                     borderRadius: '3px',
-                                    backgroundColor: currentIndex === idx ? ACCENT_COLOR : '#ddd',
+                                    backgroundColor: currentIndex === idx ? PRIMARY_COLOR : '#e2e8f0',
                                     cursor: 'pointer',
-                                    transition: 'all 0.3s'
+                                    transition: 'all 0.3s ease'
                                 }}
                             />
                         ))}
                     </div>
                 </div>
 
-                {/* Product Card */}
+                {/* Promotional Product Card */}
                 <div
                     onClick={() => onProductClick(product)}
                     style={{
                         display: 'flex',
                         gap: '16px',
-                        padding: '12px',
-                        background: '#fafafa',
-                        borderRadius: '12px',
+                        padding: '16px',
+                        background: '#f8fafc',
+                        borderRadius: '20px',
                         cursor: 'pointer',
-                        border: `1px solid ${currentIndex === 0 ? PRIMARY_COLOR : 'transparent'}`
+                        border: `1.5px solid ${PRIMARY_COLOR}`,
+                        transition: 'all 0.2s ease'
                     }}
                 >
                     <div style={{
-                        width: '80px',
-                        height: '80px',
-                        borderRadius: '8px',
+                        width: '70px',
+                        height: '70px',
+                        borderRadius: '14px',
                         overflow: 'hidden',
                         background: '#fff',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        flexShrink: 0
+                        flexShrink: 0,
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
                     }}>
                         {!loadedImages.has(product.id) ? (
-                            <div style={{
-                                width: '20px',
-                                height: '20px',
-                                border: '2px solid #ddd',
-                                borderTopColor: PRIMARY_COLOR,
-                                borderRadius: '50%',
-                                animation: 'spin 1s linear infinite'
-                            }} />
+                            <div style={{ width: '20px', height: '20px', border: '2px solid #f1f5f9', borderTopColor: PRIMARY_COLOR, borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
                         ) : hasImageError ? (
-                            <span style={{ fontSize: '24px' }}>📦</span>
+                            <span style={{ fontSize: '24px' }}>🍎</span>
                         ) : (
                             <img
                                 src={localImage}
                                 alt={product.name}
                                 onError={handleImageError}
                                 onLoad={handleImageLoad}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'contain'
-                                }}
+                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                             />
                         )}
                     </div>
                     
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                            display: 'flex',
-                            gap: '6px',
-                            marginBottom: '4px',
-                            flexWrap: 'wrap'
-                        }}>
-                            {hasDiscount && (
-                                <span style={{
-                                    background: '#ef4444',
-                                    color: 'white',
-                                    fontSize: '10px',
-                                    fontWeight: '700',
-                                    padding: '2px 8px',
-                                    borderRadius: '10px'
-                                }}>
-                                    <FaPercent size={8} style={{ marginRight: '3px' }} />
-                                    {Math.round(((originalPrice - currentPrice) / originalPrice) * 100)}% OFF
-                                </span>
-                            )}
-                            {hasPromoText && (
-                                <span style={{
-                                    background: PRIMARY_COLOR,
-                                    color: 'white',
-                                    fontSize: '10px',
-                                    fontWeight: '700',
-                                    padding: '2px 8px',
-                                    borderRadius: '10px'
-                                }}>
-                                    {promoText}
-                                </span>
-                            )}
-                        </div>
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        {hasPromoText && (
+                            <span style={{
+                                background: '#fef2f2',
+                                color: '#dc2626',
+                                fontSize: '10px',
+                                fontWeight: '800',
+                                padding: '2px 8px',
+                                borderRadius: '8px',
+                                width: 'fit-content',
+                                marginBottom: '4px',
+                                textTransform: 'uppercase'
+                            }}>
+                                {promoText}
+                            </span>
+                        )}
                         <h3 style={{
                             margin: 0,
-                            fontSize: '14px',
-                            fontWeight: '700',
+                            fontSize: '15px',
+                            fontWeight: '800',
                             color: TEXT_COLOR,
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
@@ -326,48 +267,18 @@ export default function PromotionalVideoFeed({ products = [], onProductClick }) 
                         }}>
                             {product.name}
                         </h3>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            marginTop: '4px'
-                        }}>
-                            {hasDiscount ? (
-                                <>
-                                    <span style={{
-                                        textDecoration: 'line-through',
-                                        color: '#999',
-                                        fontSize: '12px'
-                                    }}>
-                                        UGX {originalPrice.toLocaleString()}
-                                    </span>
-                                    <span style={{
-                                        color: PRIMARY_COLOR,
-                                        fontSize: '16px',
-                                        fontWeight: '800'
-                                    }}>
-                                        UGX {currentPrice.toLocaleString()}
-                                    </span>
-                                </>
-                            ) : (
-                                <span style={{
-                                    color: PRIMARY_COLOR,
-                                    fontSize: '16px',
-                                    fontWeight: '800'
-                                }}>
-                                    UGX {currentPrice.toLocaleString()}
-                                </span>
-                            )}
+                        <div style={{ color: PRIMARY_COLOR, fontSize: '12px', fontWeight: '700', marginTop: '4px' }}>
+                            Limited Time Offer
                         </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                         <FaArrowRight color={PRIMARY_COLOR} />
                     </div>
                 </div>
             </div>
 
             <style>{`
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
+                @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
             `}</style>
         </div>
     );

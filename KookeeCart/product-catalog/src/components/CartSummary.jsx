@@ -1,9 +1,9 @@
-// CartSummary.js - Improved UI
+// CartSummary.js - Improved UI - Prices Removed
 import React from 'react';
 import { FaWhatsapp, FaShoppingBag } from 'react-icons/fa';
-import { CARD_BACKGROUND, ACCENT_COLOR, DANGER_COLOR, TEXT_COLOR, LIGHT_TEXT_COLOR, PRIMARY_COLOR } from '../constants/colors';
+import { CARD_BACKGROUND, TEXT_COLOR, LIGHT_TEXT_COLOR, PRIMARY_COLOR } from '../constants/colors';
 
-export default function CartSummary({ totalItems = 0, totalPrice = 0, onOrderClick, onPreviewClick, cartRef }) {
+export default function CartSummary({ totalItems = 0, onOrderClick, onPreviewClick, cartRef }) {
   return (
     <div ref={cartRef} style={{
       position: 'fixed',
@@ -21,20 +21,15 @@ export default function CartSummary({ totalItems = 0, totalPrice = 0, onOrderCli
       borderTop: '1px solid rgba(0,0,0,0.04)'
     }}>
       <div style={{ flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
-          <FaShoppingBag size={12} style={{ color: PRIMARY_COLOR }} />
-          <span style={{ fontSize: '11px', color: LIGHT_TEXT_COLOR, fontWeight: '500' }}>
-            {totalItems} {totalItems === 1 ? 'item' : 'items'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <FaShoppingBag size={14} style={{ color: PRIMARY_COLOR }} />
+          <span style={{ fontSize: '16px', color: TEXT_COLOR, fontWeight: '700' }}>
+            {totalItems} {totalItems === 1 ? 'item' : 'items'} in cart
           </span>
         </div>
-        <div style={{ fontSize: '20px', fontWeight: '800', color: TEXT_COLOR }}>
-          UGX {totalPrice.toLocaleString()}
+        <div style={{ fontSize: '11px', color: LIGHT_TEXT_COLOR, marginTop: '2px' }}>
+          Tap Order to submit on WhatsApp
         </div>
-        {totalPrice > 0 && totalPrice < 200000 && (
-          <div style={{ fontSize: '10px', color: DANGER_COLOR, fontWeight: '600', marginTop: '2px' }}>
-            Min order: UGX 200,000
-          </div>
-        )}
       </div>
 
       <div style={{ display: 'flex', gap: '10px' }}>
@@ -59,23 +54,23 @@ export default function CartSummary({ totalItems = 0, totalPrice = 0, onOrderCli
 
         <button 
           onClick={onOrderClick} 
-          disabled={totalPrice < 200000} 
+          disabled={totalItems === 0} 
           style={{
-            background: totalPrice >= 200000 
+            background: totalItems > 0 
               ? `linear-gradient(135deg, ${PRIMARY_COLOR} 0%, #A84828 100%)` 
               : '#e5e5e5',
             color: 'white',
             border: 'none',
             padding: '12px 24px',
             borderRadius: '14px',
-            cursor: totalPrice >= 200000 ? 'pointer' : 'not-allowed',
+            cursor: totalItems > 0 ? 'pointer' : 'not-allowed',
             fontWeight: '700',
             fontSize: '14px',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             minHeight: '48px',
-            boxShadow: totalPrice >= 200000 ? '0 4px 16px rgba(200, 90, 50, 0.35)' : 'none',
+            boxShadow: totalItems > 0 ? '0 4px 16px rgba(200, 90, 50, 0.35)' : 'none',
             transition: 'all 0.2s ease'
           }}
         >

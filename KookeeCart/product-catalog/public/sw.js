@@ -57,7 +57,7 @@ self.addEventListener('fetch', (event) => {
     }
 
     // Network-first strategy for images (as per requirements)
-    if (request.url.includes('/images/')) {
+    if (request.url.includes('/images/') && !request.url.endsWith('/images/')) {
         event.respondWith(
             caches.open(IMAGE_CACHE).then((cache) => {
                 return fetch(request)

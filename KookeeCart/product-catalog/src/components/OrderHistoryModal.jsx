@@ -1,8 +1,6 @@
-// OrderHistoryModal.js (11) - Displays saved order history
-// filepath: c:\Solomon\Projects\Clients\Kookee\KookeeCart\product-catalog\src\components\OrderHistoryModal.jsx
 import React from 'react';
 import { FaTimes } from 'react-icons/fa';
-import { CARD_BACKGROUND, TEXT_COLOR, LIGHT_TEXT_COLOR, PRIMARY_COLOR } from '../constants/colors';
+import { CARD_BACKGROUND, TEXT_COLOR, LIGHT_TEXT_COLOR } from '../constants/colors';
 
 export default function OrderHistoryModal({ show, orderHistory = [], onClose }) {
   if (!show) return null;
@@ -21,14 +19,27 @@ export default function OrderHistoryModal({ show, orderHistory = [], onClose }) 
           ) : (
             orderHistory.slice().reverse().map((order, idx) => (
               <div key={idx} style={{ padding: '15px', marginBottom: '15px', border: '1px solid #eee', borderRadius: '8px' }}>
-                <div style={{ marginBottom: '10px', fontSize: '12px', color: LIGHT_TEXT_COLOR }}>{order.date}</div>
-                <div style={{ marginBottom: '10px' }}><strong>{order.customer.name}</strong> ({order.customer.phone})</div>
-                {order.items.map((item, i) => (
-                  <div key={i} style={{ fontSize: '14px', color: TEXT_COLOR }}>{item.name} × {item.qty} - UGX {(item.price * item.qty).toLocaleString()}</div>
-                ))}
-                <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #eee', fontWeight: 'bold', color: PRIMARY_COLOR }}>
-                  Total: UGX {order.total.toLocaleString()}
+                <div style={{ marginBottom: '6px', fontSize: '11px', color: LIGHT_TEXT_COLOR, fontWeight: '600' }}>{order.date}</div>
+                <div style={{ marginBottom: '10px', fontSize: '14px' }}>
+                  <strong>{order.customer.name}</strong> 
+                  <span style={{ margin: '0 8px', color: '#ccc' }}>|</span>
+                  <span style={{ color: LIGHT_TEXT_COLOR }}>{order.customer.phone}</span>
                 </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {order.items.map((item, i) => (
+                    <div key={i} style={{ fontSize: '13px', color: TEXT_COLOR, display: 'flex', justifyContent: 'space-between' }}>
+                      <span>{item.name}</span>
+                      <span style={{ fontWeight: '700', color: LIGHT_TEXT_COLOR }}>× {item.qty}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                {order.customer.location && (
+                  <div style={{ marginTop: '10px', fontSize: '12px', color: '#0ea5e9' }}>
+                    📍 Delivery Location Linked
+                  </div>
+                )}
               </div>
             ))
           )}

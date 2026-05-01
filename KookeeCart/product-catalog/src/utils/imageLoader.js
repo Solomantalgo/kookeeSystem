@@ -42,7 +42,8 @@ export const createLazyImageObserver = (callback, options = {}) => {
 export const preloadCriticalImages = (products, count = 8) => {
   const criticalProducts = products.slice(0, count);
   const imagePromises = criticalProducts.map(product => {
-    const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+    let cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+    if (!cleanName) cleanName = 'product';
     const webpSrc = `/images/${cleanName}.webp`;
     const jpgSrc = `/images/${cleanName}.jpg`;
     
@@ -62,7 +63,8 @@ export const preloadCriticalImages = (products, count = 8) => {
  * Gets image source with fallback (WebP first, then JPG)
  */
 export const getImageSrc = (product) => {
-  const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+  let cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+  if (!cleanName) cleanName = 'product';
   return `/images/${cleanName}.webp`;
 };
 
@@ -70,6 +72,7 @@ export const getImageSrc = (product) => {
  * Gets fallback image source (JPG)
  */
 export const getFallbackImageSrc = (product) => {
-  const cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+  let cleanName = product.name ? product.name.replace(/[^a-zA-Z0-9]/g, '') : 'product';
+  if (!cleanName) cleanName = 'product';
   return `/images/${cleanName}.jpg`;
 };
