@@ -18,6 +18,7 @@ const SmallCatalogView = lazy(() => import('./components/SmallCatalogView.jsx'))
 
 // Constants
 import { BACKGROUND_COLOR } from './constants/colors';
+import { MIN_ORDER_AMOUNT } from './constants/config';
 
 // --- Utility Function: Scroll Throttling ---
 const throttle = (func, limit) => {
@@ -60,6 +61,7 @@ function App() {
     const [isSendingOrder, setIsSendingOrder] = useState(false);
     const [orderStatus, setOrderStatus] = useState(null);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [orderNotice, setOrderNotice] = useState(null);
 
     // --- History API for Back Button ---
     const openOverlay = (setter, value) => {
@@ -171,6 +173,7 @@ function App() {
                 category: String(row.category || row.Category || 'other').trim(),
                 description: String(row.description || row.Description || '').trim(),
                 image: String(row.image || row.Image || '').trim().replace(/\\s/g, '') || '',
+                price: parseFloat(String(row.price || row.Price || row.PRICE || '0').replace(/[^0-9.]/g, '')) || 0,
                 stock: String(row.stock || row.Stock || 'In Stock').trim(),
                 promotion: String(row.promotion || '').toLowerCase() === 'true',
                 promoCommunicator: String(row.promoCommunicator || '').trim()
@@ -211,6 +214,20 @@ function App() {
     };
 
     const getTotalItems = () => Object.keys(cart).length;
+    const getTotalPrice = () => Object.entries(cart).reduce((sum, [productId, qty]) => {
+        const product = products.find(p => p.id === parseInt(productId));
+        const quantity = parseInt(qty) || 0;
+        return sum + (product ? product.price * quantity : 0);
+    }, 0);
+
+    const showMinimumOrderNotice = () => {
+        const totalPrice = getTotalPrice();
+        const remaining = Math.max(MIN_ORDER_AMOUNT - totalPrice, 0);
+        setOrderNotice({
+            title: 'Minimum order not reached',
+            message: `Your cart total is UGX ${totalPrice.toLocaleString()}. Add UGX ${remaining.toLocaleString()} more to order on WhatsApp.`
+        });
+    };
 
     useEffect(() => {
         const updateHeights = () => {
@@ -240,10 +257,19 @@ function App() {
     const getProductsByCategory = (category) => getFilteredProducts().filter(p => p.category === category);
 
     const handleWhatsAppOrder = () => {
+        if (getTotalPrice() < MIN_ORDER_AMOUNT) {
+            showMinimumOrderNotice();
+            return;
+        }
         openOverlay(setShowCustomerForm, true);
     };
 
     const proceedWithOrder = async () => {
+        if (getTotalPrice() < MIN_ORDER_AMOUNT) {
+            showMinimumOrderNotice();
+            return;
+        }
+
         const orderItems = Object.entries(cart)
             .filter(([_, qty]) => qty > 0)
             .map(([productId, qty]) => {
@@ -309,6 +335,49 @@ function App() {
 
     return (
         <div style={{ minHeight: '100vh', background: BACKGROUND_COLOR, paddingBottom: getTotalItems() > 0 ? '100px' : '20px' }}>
+            {orderNotice && (
+                <div
+                    role="status"
+                    style={{
+                        position: 'fixed',
+                        top: `calc(${headerHeight}px + 12px)`,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: 'calc(100% - 32px)',
+                        maxWidth: '420px',
+                        zIndex: 1400,
+                        background: '#fff7ed',
+                        color: '#9a3412',
+                        border: '1px solid #fed7aa',
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
+                        padding: '14px 16px',
+                        display: 'flex',
+                        gap: '12px',
+                        alignItems: 'flex-start'
+                    }}
+                >
+                    <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 800, marginBottom: '4px' }}>{orderNotice.title}</div>
+                        <div style={{ fontSize: '14px', lineHeight: 1.4 }}>{orderNotice.message}</div>
+                    </div>
+                    <button
+                        onClick={() => setOrderNotice(null)}
+                        aria-label="Dismiss notification"
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: '#9a3412',
+                            cursor: 'pointer',
+                            fontSize: '18px',
+                            lineHeight: 1,
+                            padding: '0 2px'
+                        }}
+                    >
+                        x
+                    </button>
+                </div>
+            )}
             {getTotalItems() > 0 && (
                 <CartSummary
                     ref={cartRef}
